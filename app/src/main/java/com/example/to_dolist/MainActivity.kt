@@ -17,11 +17,14 @@ import com.example.to_dolist.auth.login.LoginScreen
 import com.example.to_dolist.auth.signup.SignupScreen
 import com.example.to_dolist.navigation.SetupNavigation
 import com.example.to_dolist.ui.theme.ToDoListTheme
+import com.google.firebase.Firebase
+import com.google.firebase.initialize
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        Firebase.initialize(this)
         setContent {
             ToDoListTheme {
 

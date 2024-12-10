@@ -59,6 +59,7 @@ import androidx.compose.ui.text.style.TextAlign
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.to_dolist.R
 import com.example.to_dolist.navigation.NavigationRoute
@@ -66,7 +67,11 @@ import com.example.to_dolist.navigation.NavigationRoute
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) {
+
+    val authViewModel: AuthViewModel = viewModel()
+    val authError by authViewModel.authError
+
 
     var nameState = remember { mutableStateOf("") }
     var emailState = remember { mutableStateOf("") }
@@ -232,24 +237,49 @@ fun LoginScreen(navController: NavHostController) {
             )
         }
 
-        Spacer(modifier = Modifier.height(27.dp))
+        Spacer(modifier = Modifier.height(22.dp))
+        Text(
+            text = "Forgot Password?",
+            color = Color.Magenta,
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .clickable {
+                    navController.navigate(NavigationRoute.ForgotPasswordScreen.route)
+                }
+                .align(Alignment.End)
+                .padding(end = 30.dp),
+            fontSize = 14.sp,
+            textAlign = TextAlign.End
+        )
+        Spacer(modifier = Modifier.height(15.dp))
 
         // Login Button
         Button(
             onClick = {
-                // Validate fields
+                emailError = ""
+                passwordError = ""
+
                 if (emailState.value.isEmpty()) {
                     emailError = "Email cannot be empty"
-                    emailFocusRequester.requestFocus()
                 }
                 if (passwordState.value.isEmpty()) {
                     passwordError = "Password cannot be empty"
-                    passwordFocusRequester.requestFocus()
                 }
 
-                // If no errors, proceed with login logic (e.g., viewModel.doesUserExist())
                 if (emailState.value.isNotEmpty() && passwordState.value.isNotEmpty()) {
-                    // Proceed with login logic
+                   authViewModel.loginUser(
+                        email = emailState.value,
+                        password = passwordState.value,
+                        onSuccess = {
+                            emailState.value = ""
+                            passwordState.value = ""
+                            navController.navigate(NavigationRoute.HomeScreen.route)
+                        },
+//                        onError = { errorMessage ->
+//                            // Handle error (e.g., show a Snackbar or update a state variable)
+//                            emailError = errorMessage
+//                        }
+                    )
                 }
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
@@ -261,12 +291,21 @@ fun LoginScreen(navController: NavHostController) {
             Text(text = "Login", color = Color.White, fontSize = 25.sp)
         }
 
+        if (!authError.isNullOrEmpty()) {
+            Text(
+                text = authError!!,
+                color = Color.Red,
+                modifier = Modifier.padding(top = 8.dp, start = 10.dp),
+                fontSize = 14.sp
+            )
+        }
+
         Spacer(modifier = Modifier.height(20.dp))
 
         // Or Login With Text
         Text(
-            text = "                              Or Login with",
-            color = Color(0xFF45CEEB)
+            text = "                                Or Login with",
+            color = Color.Magenta
         )
 
         Spacer(modifier = Modifier.height(50.dp))
@@ -287,7 +326,7 @@ fun LoginScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(90.dp))
             Text(
                 text = "Register",
-                color = Color(0xFF50498B),
+                color = Color.Blue,
                 modifier = Modifier
                     .clickable(onClick = { navController.navigate(NavigationRoute.SignupScreen.route) })
                     .padding(top = 8.dp),

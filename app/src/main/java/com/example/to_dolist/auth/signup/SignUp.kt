@@ -35,6 +35,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -58,20 +59,28 @@ import androidx.compose.ui.text.style.TextAlign
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.to_dolist.R
+import com.example.to_dolist.auth.login.AuthViewModel
 import com.example.to_dolist.navigation.NavigationRoute
 
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SignupScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    authViewModel: AuthViewModel
 ) {
+    val authViewModel: AuthViewModel = viewModel()
+    val authError by authViewModel.authError
 
-    var nameState = remember { mutableStateOf("") }
-    var emailState = remember { mutableStateOf("") }
-    var passwordState = remember { mutableStateOf("") }
+    var emailError by remember { mutableStateOf<String?>(null) }
+
+
+    val nameState = remember { mutableStateOf("") }
+    val emailState = remember { mutableStateOf("") }
+    val passwordState = remember { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(true) }
 
     val emailFocusRequester = remember { FocusRequester() }
@@ -241,8 +250,21 @@ fun SignupScreen(
                 showPasswordError = passwordState.value.isEmpty()
 
                 if (!showNameError && !showEmailError && !showPasswordError) {
-                    // Proceed with registration logic
-                    // viewModel.doesUserExist(emailState.value, passwordState.value, nameState.value)
+                    authViewModel.signupUser(
+                        email = emailState.value,
+                        password = passwordState.value,
+                        name = nameState.value,
+                        onSuccess = {
+                            nameState.value = ""
+                            emailState.value = ""
+                            passwordState.value = ""
+                            navController.navigate(NavigationRoute.HomeScreen.route)
+                        },
+//                        onError = { errorMessage ->
+//                            // Handle error (e.g., show a Snackbar or update a state variable)
+//                            emailError = errorMessage
+//                        }
+                    )
                 }
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
@@ -253,11 +275,20 @@ fun SignupScreen(
         ) {
             Text(text = "Register", color = Color.White, fontSize = 25.sp)
         }
+        if (!authError.isNullOrEmpty()) {
+            Text(
+                text = authError!!,
+                color = Color.Red,
+                modifier = Modifier.padding(top = 8.dp, start = 10.dp),
+                fontSize = 14.sp
+            )
+        }
+
 
         Spacer(modifier = Modifier.height(20.dp))
 
         Text("                             Or Register with",
-            color = Color(0xFF45CEEB),
+            color = Color.Magenta,
             fontWeight = FontWeight.Bold
         )
 
@@ -278,7 +309,7 @@ fun SignupScreen(
             Spacer(modifier = Modifier.height(90.dp))
             Text(
                 text = "Login",
-                color = Color(0xFF50498B),
+                color = Color.Blue,
                 modifier = Modifier
                     .clickable(onClick = { navController.navigate(NavigationRoute.LoginScreen.route) }),
                 fontSize = 18.sp,
