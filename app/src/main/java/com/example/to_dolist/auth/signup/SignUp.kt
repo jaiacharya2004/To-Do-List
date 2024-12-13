@@ -3,6 +3,7 @@ package com.example.to_dolist.auth.signup
 
 
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -70,13 +71,11 @@ import com.example.to_dolist.navigation.NavigationRoute
 @Composable
 fun SignupScreen(
     navController: NavHostController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel // Use the passed parameter
 ) {
-    val authViewModel: AuthViewModel = viewModel()
     val authError by authViewModel.authError
 
     var emailError by remember { mutableStateOf<String?>(null) }
-
 
     val nameState = remember { mutableStateOf("") }
     val emailState = remember { mutableStateOf("") }
@@ -251,30 +250,31 @@ fun SignupScreen(
 
                 if (!showNameError && !showEmailError && !showPasswordError) {
                     authViewModel.signupUser(
+                        name = nameState.value,
                         email = emailState.value,
                         password = passwordState.value,
-                        name = nameState.value,
                         onSuccess = {
-                            nameState.value = ""
-                            emailState.value = ""
-                            passwordState.value = ""
-                            navController.navigate(NavigationRoute.HomeScreen.route)
+                            // Navigate to the Home Screen after successful registration
+                            navController.navigate(NavigationRoute.HomeScreen.route) {
+                                popUpTo(NavigationRoute.SignupScreen.route) { inclusive = true }
+                            }
                         },
-//                        onError = { errorMessage ->
-//                            // Handle error (e.g., show a Snackbar or update a state variable)
-//                            emailError = errorMessage
-//                        }
+                        onError = { errorMessage ->
+                            // Handle error message appropriately, e.g., display a Toast
+                            Log.e("Signup Error", errorMessage)
+                        }
                     )
                 }
             },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
             modifier = Modifier
-                .fillMaxWidth(0.7f)
-                .align(Alignment.CenterHorizontally),
-            shape = RoundedCornerShape(8.dp),
+                .fillMaxWidth(0.9f)
+                .padding(16.dp),
+            shape = RoundedCornerShape(20.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
         ) {
-            Text(text = "Register", color = Color.White, fontSize = 25.sp)
+            Text("Register", color = Color.White)
         }
+
         if (!authError.isNullOrEmpty()) {
             Text(
                 text = authError!!,
@@ -283,7 +283,6 @@ fun SignupScreen(
                 fontSize = 14.sp
             )
         }
-
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -316,9 +315,9 @@ fun SignupScreen(
                 textAlign = TextAlign.Center
             )
         }
-
     }
 }
+
 
 
 

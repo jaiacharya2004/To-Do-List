@@ -45,6 +45,14 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-analytics")
+    implementation ("com.google.android.gms:play-services-auth:21.3.0")
+    implementation ("com.firebaseui:firebase-ui-auth:8.0.2")
+
+    implementation ("androidx.appcompat:appcompat:1.7.0")
+
+    implementation ("androidx.preference:preference-ktx:1.2.1")  // Latest stable version
+
+
 
     // Jetpack Compose dependencies
     implementation(platform(libs.androidx.compose.bom))

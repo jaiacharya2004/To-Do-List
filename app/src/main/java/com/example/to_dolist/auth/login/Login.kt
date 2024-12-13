@@ -1,93 +1,70 @@
 package com.example.to_dolist.auth.login
 
-
-
-
-
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
-
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.style.TextAlign
-
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.to_dolist.PreferenceManagerHelper
 import com.example.to_dolist.R
 import com.example.to_dolist.navigation.NavigationRoute
 
-
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) {
+fun LoginScreen(navController: NavHostController) {
+
+
+    val context = LocalContext.current
+    val preferenceManagerHelper = remember { PreferenceManagerHelper(context) }
 
     val authViewModel: AuthViewModel = viewModel()
+    authViewModel.initialize(preferenceManagerHelper)
+
     val authError by authViewModel.authError
 
+// Initialize the DataStore instance inside DataStoreManager
 
-    var nameState = remember { mutableStateOf("") }
-    var emailState = remember { mutableStateOf("") }
-    var passwordState = remember { mutableStateOf("") }
+    val emailState = remember { mutableStateOf("") }
+    val passwordState = remember { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(true) }
 
     val emailFocusRequester = remember { FocusRequester() }
     val passwordFocusRequester = remember { FocusRequester() }
-    val nameFocusRequester = remember { FocusRequester() }
 
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
-    // To manage the error states for email and password fields
     var emailError by remember { mutableStateOf("") }
     var passwordError by remember { mutableStateOf("") }
+
+
+
+
+
 
     Column(
         modifier = Modifier
@@ -95,8 +72,6 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
             .background(Color.White)
             .fillMaxSize()
     ) {
-
-        // Back Button
         Row {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
@@ -112,13 +87,10 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
         }
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Welcome Text
         Row(modifier = Modifier.padding(start = 5.dp)) {
             Text(
-                text = " \u200E \u200E  Welcome Back! Glad\nto see you, Again!",
+                text = "Welcome Back! Glad to see you again!",
                 color = Color.Black,
-                modifier = Modifier
-                    .padding(top = 8.dp, start = 1.dp),
                 fontSize = 25.sp,
                 textAlign = TextAlign.Center
             )
@@ -126,11 +98,10 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
 
         Spacer(modifier = Modifier.height(44.dp))
 
-        // Email Input
         Text(
             text = "Enter Email",
             color = Color.Black,
-            modifier = Modifier.padding(top = 8.dp, start = 30.dp).focusRequester(emailFocusRequester),
+            modifier = Modifier.padding(top = 8.dp, start = 30.dp),
             fontSize = 17.sp,
             textAlign = TextAlign.Start
         )
@@ -138,7 +109,6 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
             value = emailState.value,
             onValueChange = { newValue ->
                 emailState.value = newValue
-                // Reset error when user starts typing
                 if (newValue.isNotEmpty()) emailError = ""
             },
             modifier = Modifier
@@ -147,14 +117,13 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                 .fillMaxWidth(0.9f)
                 .align(Alignment.CenterHorizontally)
                 .width(500.dp),
-            placeholder = { Text("ex :hello@email.com") },
+            placeholder = { Text("ex: hello@email.com") },
             textStyle = LocalTextStyle.current.copy(color = Color.Black),
             singleLine = true,
             shape = RoundedCornerShape(20.dp),
-            keyboardOptions = KeyboardOptions(
+            keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next,
-                keyboardType = KeyboardType.Email,
-                autoCorrect = false,
+                keyboardType = KeyboardType.Email
             ),
             keyboardActions = KeyboardActions(
                 onNext = {
@@ -166,7 +135,6 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
             isError = emailError.isNotEmpty()
         )
 
-        // Error message for email
         if (emailError.isNotEmpty()) {
             Text(
                 text = emailError,
@@ -178,7 +146,6 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        // Password Input
         Text(
             text = "Enter Password",
             color = Color.Black,
@@ -190,13 +157,12 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
             value = passwordState.value,
             onValueChange = { newValue ->
                 passwordState.value = newValue
-                // Reset error when user starts typing
                 if (newValue.isNotEmpty()) passwordError = ""
             },
             modifier = Modifier
+                .focusRequester(passwordFocusRequester)
                 .padding(top = 8.dp, start = 4.dp)
                 .fillMaxWidth(0.9f)
-                .focusRequester(passwordFocusRequester)
                 .align(Alignment.CenterHorizontally)
                 .width(500.dp),
             placeholder = { Text("Password") },
@@ -205,12 +171,10 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
             shape = RoundedCornerShape(20.dp),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Password,
+                keyboardType = KeyboardType.Password
             ),
             trailingIcon = {
-                IconButton(onClick = {
-                    passwordVisibility = !passwordVisibility
-                }) {
+                IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
                     val icon: Painter = if (passwordVisibility) {
                         painterResource(id = R.drawable.visibility)
                     } else {
@@ -219,15 +183,11 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                     Icon(painter = icon, contentDescription = "Toggle visibility")
                 }
             },
-            keyboardActions = KeyboardActions(onDone = {
-                keyboardController?.hide()
-            }),
-            visualTransformation = if (passwordVisibility) VisualTransformation.None
-            else PasswordVisualTransformation(),
+            keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+            visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
             isError = passwordError.isNotEmpty()
         )
 
-        // Error message for password
         if (passwordError.isNotEmpty()) {
             Text(
                 text = passwordError,
@@ -238,6 +198,7 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
         }
 
         Spacer(modifier = Modifier.height(22.dp))
+
         Text(
             text = "Forgot Password?",
             color = Color.Magenta,
@@ -251,9 +212,9 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
             fontSize = 14.sp,
             textAlign = TextAlign.End
         )
+
         Spacer(modifier = Modifier.height(15.dp))
 
-        // Login Button
         Button(
             onClick = {
                 emailError = ""
@@ -267,18 +228,21 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
                 }
 
                 if (emailState.value.isNotEmpty() && passwordState.value.isNotEmpty()) {
-                   authViewModel.loginUser(
+                    authViewModel.loginUser(
                         email = emailState.value,
                         password = passwordState.value,
                         onSuccess = {
                             emailState.value = ""
                             passwordState.value = ""
-                            navController.navigate(NavigationRoute.HomeScreen.route)
+                            navController.navigate(NavigationRoute.HomeScreen.route) {
+                                // Pop previous screens to ensure the user cannot go back to the login screen
+                                popUpTo(NavigationRoute.LoginScreen.route) { inclusive = true }
+                            }
                         },
-//                        onError = { errorMessage ->
-//                            // Handle error (e.g., show a Snackbar or update a state variable)
-//                            emailError = errorMessage
-//                        }
+                        onError = { errorMessage ->
+                            // Display the error message in the UI
+                            emailError = errorMessage
+                        }
                     )
                 }
             },
@@ -286,10 +250,11 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
             modifier = Modifier
                 .fillMaxWidth(0.7f)
                 .align(Alignment.CenterHorizontally),
-            shape = RoundedCornerShape(8.dp),
+            shape = RoundedCornerShape(8.dp)
         ) {
             Text(text = "Login", color = Color.White, fontSize = 25.sp)
         }
+
 
         if (!authError.isNullOrEmpty()) {
             Text(
@@ -302,15 +267,14 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Or Login With Text
         Text(
-            text = "                                Or Login with",
-            color = Color.Magenta
+            text = "Or Login with",
+            color = Color.Magenta,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
         Spacer(modifier = Modifier.height(50.dp))
 
-        // Register Text
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
@@ -319,11 +283,9 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
             Text(
                 text = "Don't have an account? ",
                 color = Color.Gray,
-                modifier = Modifier.padding(top = 8.dp),
                 fontSize = 15.sp,
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(90.dp))
             Text(
                 text = "Register",
                 color = Color.Blue,
@@ -336,22 +298,3 @@ fun LoginScreen(navController: NavHostController, authViewModel: AuthViewModel) 
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
