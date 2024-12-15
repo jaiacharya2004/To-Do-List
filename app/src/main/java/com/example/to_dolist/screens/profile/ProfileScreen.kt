@@ -28,7 +28,7 @@ fun ProfileScreen(navController: NavHostController) {
             .fillMaxSize()
     ) {
         Text("Profile Screen")
-        Spacer(modifier = Modifier.height(660.dp))
+        Spacer(modifier = Modifier.height(661.dp))
 
         BottomBar(navController)
     }
