@@ -14,6 +14,8 @@ import com.example.to_dolist.auth.login.LoginScreen
 import com.example.to_dolist.auth.login.forgotpassword.ForgotPasswordScreen
 import com.example.to_dolist.auth.signup.SignupScreen
 import com.example.to_dolist.screens.home.HomeScreen
+import com.example.to_dolist.screens.pomodoro.PomodoroScreen
+import com.example.to_dolist.screens.profile.ProfileScreen
 import com.example.to_dolist.screens.splashscreens.SplashManager
 
 @Composable
@@ -40,6 +42,13 @@ fun NavHostGraph(navController: NavHostController, context: Context, authViewMod
         composable(NavigationRoute.HomeScreen.route) {
             HomeScreen(navController)
         }
+        composable(NavigationRoute.ProfileScreen.route) {
+            ProfileScreen(navController)
+        }
+        composable(NavigationRoute.PomodoroScreen.route) {
+            PomodoroScreen(navController)
+        }
+
     }
 }
 
@@ -57,4 +66,6 @@ sealed class NavigationRoute(val route: String) {
     data object SignupScreen : NavigationRoute("signup")
     data object ForgotPasswordScreen : NavigationRoute("forgot_password_screen")
     data object HomeScreen : NavigationRoute("home")
+    data object ProfileScreen : NavigationRoute("profile")
+    data object PomodoroScreen : NavigationRoute("pomodoro")
 }

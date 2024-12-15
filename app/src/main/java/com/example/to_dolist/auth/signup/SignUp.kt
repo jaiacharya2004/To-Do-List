@@ -17,9 +17,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
@@ -39,6 +41,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -77,9 +80,9 @@ fun SignupScreen(
 
     var emailError by remember { mutableStateOf<String?>(null) }
 
-    val nameState = remember { mutableStateOf("") }
-    val emailState = remember { mutableStateOf("") }
-    val passwordState = remember { mutableStateOf("") }
+    val nameState = rememberSaveable  { mutableStateOf("") }
+    val emailState = rememberSaveable  { mutableStateOf("") }
+    val passwordState = rememberSaveable  { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(true) }
 
     val emailFocusRequester = remember { FocusRequester() }
@@ -96,6 +99,7 @@ fun SignupScreen(
     Column(
         modifier = Modifier
             .padding(top = 50.dp)
+            .verticalScroll(rememberScrollState()) // Enable vertical scrolling
             .background(Color.White)
             .fillMaxSize()
     ) {

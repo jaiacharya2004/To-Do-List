@@ -5,13 +5,16 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -48,9 +51,9 @@ fun LoginScreen(navController: NavHostController) {
 
 // Initialize the DataStore instance inside DataStoreManager
 
-    val emailState = remember { mutableStateOf("") }
-    val passwordState = remember { mutableStateOf("") }
-    var passwordVisibility by remember { mutableStateOf(true) }
+    val emailState = rememberSaveable  { mutableStateOf("") }
+    val passwordState = rememberSaveable  { mutableStateOf("") }
+    var passwordVisibility by rememberSaveable  { mutableStateOf(true) }
 
     val emailFocusRequester = remember { FocusRequester() }
     val passwordFocusRequester = remember { FocusRequester() }
@@ -69,6 +72,7 @@ fun LoginScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
             .padding(top = 50.dp)
+            .verticalScroll(rememberScrollState()) // Enable vertical scrolling
             .background(Color.White)
             .fillMaxSize()
     ) {
