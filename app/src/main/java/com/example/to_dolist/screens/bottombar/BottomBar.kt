@@ -93,12 +93,14 @@ fun BottomBarItem(
             Icon(
                 painter = painterResource(id = tab.icon),
                 contentDescription = tab.label,
-                tint = if (isSelected) selectedColor else unselectedColor,
-                modifier = Modifier.size(28.dp)
+                tint = Color.Unspecified, // Disables tint from `Icon`
+//                tint = if (isSelected) selectedColor else unselectedColor,  // Ensure tint is applied
+                modifier = Modifier.size(48.dp)
             )
         }
     }
 }
+
 
 // Data class for BottomBarTab
 data class BottomBarTab(

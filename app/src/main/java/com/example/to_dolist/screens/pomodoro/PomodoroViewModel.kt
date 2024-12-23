@@ -4,6 +4,7 @@ import android.os.CountDownTimer
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 
@@ -17,36 +18,34 @@ class PomodoroViewModel : ViewModel() {
             timeLeft = value * 60 * 1000L
             updateTimerDisplay()
         }
-    var timeLeft by mutableStateOf(25 * 60 * 1000L) // Time left in milliseconds
+    var timeLeft by mutableLongStateOf(25 * 60 * 1000L) // Time left in milliseconds
     var isTimerRunning by mutableStateOf(false)
     var isPaused by mutableStateOf(false) // To track if the timer is paused
     var timerText by mutableStateOf("25:00")
+    var isBreakTime = false
+    var breakDuration: Int by mutableIntStateOf(5) // Default break duration in minutes
+
     private var countdownTimer: CountDownTimer? = null
 
     // Start the timer
     fun startTimer() {
-        if (!isPaused) {
-            // Start with the full selected time if not resuming
-            timeLeft = selectedTimeInMinutes * 60 * 1000L
-        }
+        isTimerRunning = true
+        isPaused = false
 
-        countdownTimer?.cancel() // Cancel any existing timer
         countdownTimer = object : CountDownTimer(timeLeft, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 timeLeft = millisUntilFinished
-                updateTimerDisplay()
+                updateTimerDisplay() // Update the display each second
             }
 
             override fun onFinish() {
-                timeLeft = 0
-                updateTimerDisplay()
                 isTimerRunning = false
                 isPaused = false
+                timeLeft = 0L
+                updateTimerDisplay()
+                // Handle the end of the Pomodoro session (e.g., notify user, start break)
             }
         }.start()
-
-        isTimerRunning = true
-        isPaused = false
     }
 
     // Pause the timer
@@ -66,11 +65,58 @@ class PomodoroViewModel : ViewModel() {
     // Restart the timer to the default time
     fun restartTimer() {
         countdownTimer?.cancel()
-        timeLeft = selectedTimeInMinutes * 60 * 1000L // Reset to full time
+        // Update the timeLeft according to the current session (break or Pomodoro)
+        if (isBreakTime) {
+            timeLeft = breakDuration * 60 * 1000L // Break duration
+        } else {
+            timeLeft = selectedTimeInMinutes * 60 * 1000L // Pomodoro duration
+        }
+        updateTimerDisplay() // Update display immediately
         isTimerRunning = false
         isPaused = false
+    }
+
+
+    fun startBreak() {
+        isBreakTime = true
+        timeLeft = breakDuration * 60 * 1000L // Set the break time directly
+        updateTimerDisplay()
+        startTimer()
+    }
+
+
+    fun skipBreak() {
+        isBreakTime = false
+        selectedTimeInMinutes = 25 // Default Pomodoro duration
+        resetTimer()
+        startTimer() // Automatically start the next Pomodoro session
+    }
+
+    private fun resetTimer() {
+        isTimerRunning = false
+        isPaused = false
+        timeLeft = selectedTimeInMinutes * 60 * 1000L
+        isBreakTime = false // Reset the break state
+    }
+
+    fun updateTimeLeftFromSlider(newValue: Int) {
+        countdownTimer?.cancel() // Stop the timer if it's running
+        isTimerRunning = false
+        isPaused = false
+
+        if (isBreakTime) {
+            breakDuration = newValue
+            timeLeft = newValue * 60 * 1000L
+        } else {
+            selectedTimeInMinutes = newValue
+            timeLeft = newValue * 60 * 1000L
+        }
+
         updateTimerDisplay()
     }
+
+
+
 
     // Update the timer display (e.g., "MM:SS")
     private fun updateTimerDisplay() {
