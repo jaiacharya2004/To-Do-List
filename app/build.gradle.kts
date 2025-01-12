@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services") version "4.4.2"
+    id("kotlin-kapt")
 }
 
 android {
@@ -47,6 +48,16 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation ("com.google.android.gms:play-services-auth:21.3.0")
     implementation ("com.firebaseui:firebase-ui-auth:8.0.2")
+    implementation ("com.google.android.gms:play-services-maps:19.0.0")
+
+    implementation ("androidx.room:room-runtime:2.6.1")
+    implementation(libs.androidx.media3.database)
+    annotationProcessor ("androidx.room:room-compiler:2.6.1")
+    implementation ("androidx.room:room-ktx:2.6.1")
+
+
+
+
 
     implementation ("androidx.appcompat:appcompat:1.7.0")
 
@@ -66,6 +77,9 @@ dependencies {
     implementation (libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.coil.compose)
     implementation (libs.coil.gif)// GIF support
+
+    implementation ("io.coil-kt:coil-compose:2.5.0")
+
 
 
 

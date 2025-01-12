@@ -3,4 +3,7 @@ These are the things still remaining in the app :-
 1. Make only 1 splash screen instead of 3 that file save as Pomodoro Main jpg image in desktop.
 2.Theming and Colors of all component.
 3. NotificationManager Add Notifications of Tasks and Pomodoro other then this make apps notification to use it or other.
-4.
+4. Celebration Animation after Pomodoro End
+5. Add Music in Pomodoro start and End
+6. Rotate Timer Like Focus To-Do App when Pomodoro Start
+7.

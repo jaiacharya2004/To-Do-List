@@ -99,7 +99,7 @@ fun PomodoroScreen(navController: NavHostController, pomodoroViewModel: Pomodoro
             Text(
                 text = timerText,
                 color = Color.White,
-                fontSize = 25.sp,
+                fontSize = 50.sp,
                 modifier = Modifier.align(Alignment.Center)
             )
         }

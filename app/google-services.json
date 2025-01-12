@@ -12,7 +12,12 @@
           "package_name": "com.example.to_dolist"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "97492003829-hpfp1hgj0guqk6m474s9ai08jljffco5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCsDREY51oM3OMxlVP00E9XVm2JLIipRIs"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "97492003829-hpfp1hgj0guqk6m474s9ai08jljffco5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

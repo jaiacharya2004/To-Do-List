@@ -1,6 +1,7 @@
 package com.example.to_dolist.navigation
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -14,21 +15,26 @@ import com.example.to_dolist.auth.login.AuthViewModel
 import com.example.to_dolist.auth.login.LoginScreen
 import com.example.to_dolist.auth.login.forgotpassword.ForgotPasswordScreen
 import com.example.to_dolist.auth.signup.SignupScreen
+
 import com.example.to_dolist.screens.home.HomeScreen
 import com.example.to_dolist.screens.pomodoro.PomodoroScreen
 import com.example.to_dolist.screens.pomodoro.PomodoroViewModel
 import com.example.to_dolist.screens.profile.ProfileScreen
+import com.example.to_dolist.screens.profile.ProfileViewModel
 import com.example.to_dolist.screens.splashscreens.SplashManager
 import com.example.to_dolist.screens.states.StateScreen
 
 @Composable
 fun NavHostGraph(navController: NavHostController, context: Context, authViewModel: AuthViewModel) {
     val preferenceManagerHelper = PreferenceManagerHelper(context)
+
     authViewModel.initialize(preferenceManagerHelper)
 
     val pomodoroViewModel: PomodoroViewModel = viewModel()
-    Log.d("ViewModelValue", "$pomodoroViewModel")
 
+    // Use context to initialize ProfileRepository, not ProfileImageDao directly
+
+    Log.d("ViewModelValue", "$pomodoroViewModel")
 
     NavHost(navController = navController, startDestination = NavigationRoute.Splash.route) {
         composable(NavigationRoute.Splash.route) {
@@ -50,20 +56,19 @@ fun NavHostGraph(navController: NavHostController, context: Context, authViewMod
             HomeScreen(navController)
         }
         composable(NavigationRoute.ProfileScreen.route) {
-            ProfileScreen(navController)
+            ProfileScreen(navController = navController, ProfileViewModel(context))
         }
         composable(NavigationRoute.PomodoroScreen.route) {
-            PomodoroScreen(navController,pomodoroViewModel)
+            PomodoroScreen(navController, pomodoroViewModel)
         }
         composable(NavigationRoute.StateScreen.route) {
             StateScreen(navController)
         }
-
     }
 }
 
 @Composable
-fun SetupNavigation(context: Context) {
+fun SetupNavigation(context: Context)  {
     val navController = rememberNavController() // Initialize navController only once here
     val authViewModel: AuthViewModel = viewModel() // Obtain AuthViewModel here
     NavHostGraph(navController, context, authViewModel) // Pass the navController and context to NavHostGraph
