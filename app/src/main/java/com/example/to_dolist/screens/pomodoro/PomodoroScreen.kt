@@ -208,9 +208,14 @@ fun PomodoroScreen(navController: NavHostController, pomodoroViewModel: Pomodoro
 
 
 
-        Spacer(modifier = Modifier.height(115.dp))
-
-        // Bottom Bar navigation
+//        Spacer(modifier = Modifier.height(115.dp))
+//
+//        // Bottom Bar navigation
+//        BottomBar(navController)
+    }
+    Column(
+        modifier = Modifier.padding(top = 795.dp)
+    ) {
         BottomBar(navController)
     }
 }

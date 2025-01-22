@@ -152,7 +152,7 @@ fun ProfileScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(375.dp))
+        Spacer(modifier = Modifier.height(367.dp))
 
         BottomBar(
             navController = navController

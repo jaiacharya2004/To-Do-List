@@ -2,7 +2,9 @@ package com.example.to_dolist.navigation
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -16,6 +18,7 @@ import com.example.to_dolist.auth.login.LoginScreen
 import com.example.to_dolist.auth.login.forgotpassword.ForgotPasswordScreen
 import com.example.to_dolist.auth.signup.SignupScreen
 
+
 import com.example.to_dolist.screens.home.HomeScreen
 import com.example.to_dolist.screens.pomodoro.PomodoroScreen
 import com.example.to_dolist.screens.pomodoro.PomodoroViewModel
@@ -24,6 +27,7 @@ import com.example.to_dolist.screens.profile.ProfileViewModel
 import com.example.to_dolist.screens.splashscreens.SplashManager
 import com.example.to_dolist.screens.states.StateScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavHostGraph(navController: NavHostController, context: Context, authViewModel: AuthViewModel) {
     val preferenceManagerHelper = PreferenceManagerHelper(context)
@@ -31,7 +35,6 @@ fun NavHostGraph(navController: NavHostController, context: Context, authViewMod
     authViewModel.initialize(preferenceManagerHelper)
 
     val pomodoroViewModel: PomodoroViewModel = viewModel()
-
     // Use context to initialize ProfileRepository, not ProfileImageDao directly
 
     Log.d("ViewModelValue", "$pomodoroViewModel")
@@ -53,7 +56,9 @@ fun NavHostGraph(navController: NavHostController, context: Context, authViewMod
             SignupScreen(navController, authViewModel = authViewModel)
         }
         composable(NavigationRoute.HomeScreen.route) {
-            HomeScreen(navController)
+            HomeScreen(
+                navController, ProfileViewModel(context),
+            )
         }
         composable(NavigationRoute.ProfileScreen.route) {
             ProfileScreen(navController = navController, ProfileViewModel(context))
@@ -67,6 +72,7 @@ fun NavHostGraph(navController: NavHostController, context: Context, authViewMod
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SetupNavigation(context: Context)  {
     val navController = rememberNavController() // Initialize navController only once here

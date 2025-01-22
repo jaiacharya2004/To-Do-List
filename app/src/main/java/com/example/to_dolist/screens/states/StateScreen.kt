@@ -26,8 +26,14 @@ fun StateScreen(navController: NavHostController) {
             .fillMaxSize()
     ) {
         Text("States Reports Screen")
-        Spacer(modifier = Modifier.height(660.dp))
 
+
+    }
+
+    Column(
+        modifier = Modifier.padding(top = 795.dp)
+    ) {
         BottomBar(navController)
     }
+
 }

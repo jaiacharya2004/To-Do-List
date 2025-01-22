@@ -42,7 +42,7 @@ fun BottomBar(navController: NavHostController) {
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp)
+            .height(110.dp)
     ) {
         Row(
             modifier = Modifier
