@@ -15,9 +15,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -42,10 +44,10 @@ import com.example.to_dolist.navigation.NavigationRoute
 import com.example.to_dolist.screens.bottombar.BottomBar
 import com.example.to_dolist.screens.calendar.ScrollableCalendar
 import com.example.to_dolist.screens.profile.ProfileViewModel
+import com.example.to_dolist.screens.todo.TodoListScreen
 import com.google.firebase.auth.FirebaseAuth
 import java.time.LocalDate
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: ProfileViewModel) {
     val user = FirebaseAuth.getInstance().currentUser
@@ -110,11 +112,19 @@ fun HomeScreen(navController: NavHostController, viewModel: ProfileViewModel) {
             fontWeight = FontWeight.Bold
         )
         // You can populate tasks here related to `selectedDate`
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Divider(color = Color.Gray, thickness = 1.dp)
+
+        TodoListScreen(viewModel = HomeViewModel())
+
+
+
     }
 
     // Bottom Navigation Bar
     Column(
-        modifier = Modifier.padding(top = 795.dp)
+        modifier = Modifier.padding(top = 805.dp)
     ) {
         BottomBar(navController)
     }

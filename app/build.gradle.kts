@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services") version "4.4.2"
-    id("kotlin-kapt")
 }
 
 android {
@@ -12,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.to_dolist"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -49,11 +48,23 @@ dependencies {
     implementation ("com.google.android.gms:play-services-auth:21.3.0")
     implementation ("com.firebaseui:firebase-ui-auth:8.0.2")
     implementation ("com.google.android.gms:play-services-maps:19.0.0")
+    implementation ("com.google.firebase:firebase-firestore:25.1.1") // Firestore SDK
+    implementation ("com.google.android.gms:play-services-base:18.5.0")  // Base Google Play services
+    implementation ("com.google.firebase:firebase-messaging:24.1.0")  // For notifications (if needed for alarm/notification)
+
+
+
+
+
+
+
 
     implementation ("androidx.room:room-runtime:2.6.1")
     implementation(libs.androidx.media3.database)
-    annotationProcessor ("androidx.room:room-compiler:2.6.1")
-    implementation ("androidx.room:room-ktx:2.6.1")
+    implementation(libs.androidx.runtime.livedata)
+
+
+
 
 
 
@@ -75,6 +86,8 @@ dependencies {
     implementation ("androidx.navigation:navigation-compose:2.8.5")
 
     implementation (libs.androidx.lifecycle.runtime.ktx)
+    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+
     implementation(libs.coil.compose)
     implementation (libs.coil.gif)// GIF support
 

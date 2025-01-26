@@ -22,7 +22,8 @@ import com.example.to_dolist.navigation.NavigationRoute
 @Composable
 fun BottomBar(navController: NavHostController) {
     val bottomBarColor = Color(0xFF6200EE) // Purple Background
-    val selectedIconColor = Color.White
+
+    val selectedIconColor = Color(0xFF6200EE)
     val unselectedIconColor = Color(0xFFBB86FC) // Light Purple
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
