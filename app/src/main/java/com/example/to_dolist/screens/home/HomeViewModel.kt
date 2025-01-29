@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 class HomeViewModel : ViewModel() {
 
     private val _todos = MutableLiveData<List<Todo>>()
-    val todos: LiveData<List<Todo>> get() = _todos
+    private val todos: LiveData<List<Todo>> get() = _todos
 
     private val todoRepository = TodoRepository()
 
@@ -34,8 +34,12 @@ class HomeViewModel : ViewModel() {
 
     // Add Todo to Firestore
     fun addTodo(todo: Todo) {
-        todoRepository.addTodo(todo)
+        viewModelScope.launch {
+            todoRepository.addTodo(todo)
+            fetchTodos() // Refresh the list after adding a new task
+        }
     }
+
     fun deleteTodo(todo: Todo) {
         viewModelScope.launch {
             todoRepository.deleteTodo(todo)

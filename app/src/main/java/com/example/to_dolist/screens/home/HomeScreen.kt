@@ -55,77 +55,82 @@ fun HomeScreen(navController: NavHostController, viewModel: ProfileViewModel) {
     val profileImageUri by viewModel.profileImageUri.collectAsState()
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
 
-    Column(
+    // Use Box to ensure consistent background color across the entire screen
+    Box(
         modifier = Modifier
-            .padding(top = 40.dp, start = 16.dp, end = 16.dp)
-            .verticalScroll(rememberScrollState())
-            .background(Color.White)
-            .fillMaxSize()
+            .fillMaxSize() // Ensures the Box takes up the entire screen
+            .background(Color(0xFFFFFAF0)) // Background color
     ) {
-        // Top Row: Profile Image and Greeting
-        Row(
+        // Column with padding inside the Box
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(top = 40.dp, start = 16.dp, end = 16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
-            // Profile Image
-            Image(
-                painter = if (profileImageUri != null) {
-                    rememberAsyncImagePainter(model = profileImageUri)
-                } else {
-                    painterResource(id = R.drawable.profilephoto)
-                },
-                contentDescription = "Profile Image",
+            // Top Row: Profile Image and Greeting
+            Row(
                 modifier = Modifier
-                    .size(60.dp)
-                    .clip(CircleShape)
-                    .background(Color.LightGray),
-                contentScale = ContentScale.Crop
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Profile Image
+                Image(
+                    painter = if (profileImageUri != null) {
+                        rememberAsyncImagePainter(model = profileImageUri)
+                    } else {
+                        painterResource(id = R.drawable.profilephoto)
+                    },
+                    contentDescription = "Profile Image",
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(CircleShape)
+                        .clickable {  }
+                        .background(Color.LightGray),
+                    contentScale = ContentScale.Crop
+                )
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                // Greeting Text
+                Text(
+                    text = "Hello!\n$userName",
+                    fontFamily = FontFamily.Serif,
+                    fontSize = 20.sp
+                )
+
+
+            }
+
+            // Scrollable Calendar
+            ScrollableCalendar(
+                selectedDate = selectedDate,
+                onDateSelected = { date ->
+                    selectedDate = date
+                    // Load tasks or perform actions for the selected date
+                }
             )
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // Greeting Text
+            // Example Section: Selected Date Tasks (Placeholder)
             Text(
-                text = "Hello!\n$userName",
-                fontFamily = FontFamily.Serif,
-                fontSize = 20.sp
+                text = "Tasks for ${selectedDate.dayOfMonth} ${selectedDate.month}",
+                fontWeight = FontWeight.Bold
             )
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Divider(color = Color.Gray, thickness = 1.dp)
+
+            TodoListScreen(viewModel = HomeViewModel(),navController)
+
+
+
         }
 
-//         Scrollable Calendar
-        ScrollableCalendar(
-            selectedDate = selectedDate,
-            onDateSelected = { date ->
-                selectedDate = date
-                // Load tasks or perform actions for the selected date
-            }
-        )
+        Column (
+            modifier = Modifier.padding(top = 805.dp)
+        ){BottomBar(navController)  }
 
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Example Section: Selected Date Tasks (Placeholder)
-        Text(
-            text = "Tasks for ${selectedDate.dayOfMonth} ${selectedDate.month}",
-            fontWeight = FontWeight.Bold
-        )
-        // You can populate tasks here related to `selectedDate`
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Divider(color = Color.Gray, thickness = 1.dp)
-
-        TodoListScreen(viewModel = HomeViewModel())
-
-
-
-    }
-
-    // Bottom Navigation Bar
-    Column(
-        modifier = Modifier.padding(top = 805.dp)
-    ) {
-        BottomBar(navController)
     }
 }

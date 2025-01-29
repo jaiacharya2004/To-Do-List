@@ -21,20 +21,19 @@ import com.example.to_dolist.navigation.NavigationRoute
 
 @Composable
 fun BottomBar(navController: NavHostController) {
-    val bottomBarColor = Color(0xFF6200EE) // Purple Background
-
-    val selectedIconColor = Color(0xFF6200EE)
-    val unselectedIconColor = Color(0xFFBB86FC) // Light Purple
+    val bottomBarColor = Color(0xFFFFFAF0) // Purple Background
+    val selectedIconColor = Color.White
+    val unselectedIconColor = Color.White // Light Purple
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination
 
     // List of tabs
     val tabs = listOf(
-        BottomBarTab("Home", R.drawable._d_house, NavigationRoute.HomeScreen.route),
-        BottomBarTab("Pomodoro", R.drawable.sand_clock, NavigationRoute.PomodoroScreen.route),
-        BottomBarTab("Profile", R.drawable.user__3_, NavigationRoute.ProfileScreen.route),
-        BottomBarTab("State", R.drawable.exploratory_analysis_12489862, NavigationRoute.StateScreen.route)
+        BottomBarTab("Home", R.drawable.home__5_, NavigationRoute.HomeScreen.route),
+        BottomBarTab("Pomodoro", R.drawable.hour_glass, NavigationRoute.PomodoroScreen.route),
+        BottomBarTab("Profile", R.drawable.user, NavigationRoute.ProfileScreen.route),
+        BottomBarTab("State", R.drawable.pie_chart, NavigationRoute.StateScreen.route)
     )
 
     Card(
@@ -43,7 +42,7 @@ fun BottomBar(navController: NavHostController) {
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .height(110.dp)
+            .height(100.dp)
     ) {
         Row(
             modifier = Modifier
@@ -85,18 +84,20 @@ fun BottomBarItem(
         modifier = Modifier
             .size(60.dp)
             .background(
-                if (isSelected) selectedColor.copy(alpha = 0.2f) else Color.Transparent,
+                if (isSelected) selectedColor.copy(alpha = 0.5f) else Color.Transparent,
                 shape = CircleShape
             ),
         contentAlignment = Alignment.Center
     ) {
         IconButton(onClick = onClick) {
+
+
             Icon(
                 painter = painterResource(id = tab.icon),
                 contentDescription = tab.label,
                 tint = Color.Unspecified, // Disables tint from `Icon`
 //                tint = if (isSelected) selectedColor else unselectedColor,  // Ensure tint is applied
-                modifier = Modifier.size(48.dp)
+                modifier = Modifier.size(30.dp)
             )
         }
     }

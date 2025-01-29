@@ -17,17 +17,19 @@ import com.example.to_dolist.auth.login.AuthViewModel
 import com.example.to_dolist.auth.login.LoginScreen
 import com.example.to_dolist.auth.login.forgotpassword.ForgotPasswordScreen
 import com.example.to_dolist.auth.signup.SignupScreen
+import com.example.to_dolist.data.FirestoreHelper
 
 
 import com.example.to_dolist.screens.home.HomeScreen
+import com.example.to_dolist.screens.home.HomeViewModel
 import com.example.to_dolist.screens.pomodoro.PomodoroScreen
 import com.example.to_dolist.screens.pomodoro.PomodoroViewModel
 import com.example.to_dolist.screens.profile.ProfileScreen
 import com.example.to_dolist.screens.profile.ProfileViewModel
 import com.example.to_dolist.screens.splashscreens.SplashManager
 import com.example.to_dolist.screens.states.StateScreen
+import com.example.to_dolist.screens.todo.CreateNewTaskScreen
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavHostGraph(navController: NavHostController, context: Context, authViewModel: AuthViewModel) {
     val preferenceManagerHelper = PreferenceManagerHelper(context)
@@ -69,10 +71,18 @@ fun NavHostGraph(navController: NavHostController, context: Context, authViewMod
         composable(NavigationRoute.StateScreen.route) {
             StateScreen(navController)
         }
+        composable(NavigationRoute.CreateNewScreen.route) {
+            CreateNewTaskScreen(navController, viewmodel = HomeViewModel(), onTaskCreate = { task ->
+                // Add the task to Firestore
+                val firestoreHelper = FirestoreHelper()
+                firestoreHelper.addTodo(task)
+            })
+        }
+
+
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SetupNavigation(context: Context)  {
     val navController = rememberNavController() // Initialize navController only once here
@@ -90,4 +100,5 @@ sealed class NavigationRoute(val route: String) {
     data object ProfileScreen : NavigationRoute("profile")
     data object PomodoroScreen : NavigationRoute("pomodoro")
     data object StateScreen : NavigationRoute("states")
+    data object CreateNewScreen : NavigationRoute("create_task_screen")
 }

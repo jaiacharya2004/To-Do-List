@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.to_dolist.data.model.Todo
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.DocumentReference
 
@@ -33,7 +34,15 @@ class FirestoreHelper {
                     return@addSnapshotListener
                 }
                 val todoList = snapshot?.documents?.map { document ->
-                    document.toObject(Todo::class.java) ?: Todo()
+                    val todo = document.toObject(Todo::class.java)
+                    todo ?: Todo(
+                        taskName = "",
+                        category = "",
+                        description = "",
+                        date = Timestamp.now(),
+                        status = ""
+
+                    )
                 } ?: emptyList()
                 todos.postValue(todoList)
             }
@@ -42,7 +51,8 @@ class FirestoreHelper {
 
     // Delete a specific Todo from Firestore
     fun deleteTodo(todo: Todo) {
-        val todoRef: DocumentReference = db.collection("todos").document(todo.id)
+        val todoRef: DocumentReference =
+            db.collection("todos").document(todo.taskName)  // Assuming the title is unique
         todoRef.delete()
             .addOnSuccessListener {
                 Log.d("FirestoreHelper", "Todo deleted successfully")
@@ -60,10 +70,17 @@ class FirestoreHelper {
                 for (document in result) {
                     db.collection("todos").document(document.id).delete()
                         .addOnSuccessListener {
-                            Log.d("FirestoreHelper", "Todo with ID ${document.id} deleted successfully")
+                            Log.d(
+                                "FirestoreHelper",
+                                "Todo with ID ${document.id} deleted successfully"
+                            )
                         }
                         .addOnFailureListener { exception ->
-                            Log.e("FirestoreHelper", "Error deleting Todo with ID ${document.id}", exception)
+                            Log.e(
+                                "FirestoreHelper",
+                                "Error deleting Todo with ID ${document.id}",
+                                exception
+                            )
                         }
                 }
             }

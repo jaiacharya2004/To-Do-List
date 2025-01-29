@@ -65,7 +65,6 @@ fun ScrollableCalendar(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DateItem(
     date: LocalDate,
