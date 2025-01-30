@@ -22,7 +22,7 @@ fun StateScreen(navController: NavHostController) {
         modifier = Modifier
             .padding(top = 120.dp, start = 1.dp, end = 1.dp)
             .verticalScroll(rememberScrollState()) // Enable vertical scrolling
-            .background(Color.White)
+            .background(Color(0xFFFFFAF0)) // Background color
             .fillMaxSize()
     ) {
         Text("States Reports Screen")
@@ -31,7 +31,9 @@ fun StateScreen(navController: NavHostController) {
     }
 
     Column(
-        modifier = Modifier.padding(top = 795.dp)
+        modifier = Modifier.padding(top = 805.dp)
+
+
     ) {
         BottomBar(navController)
     }

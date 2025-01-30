@@ -24,7 +24,10 @@ class FirestoreHelper {
             }
     }
 
+
+
     // Get Todos from Firestore (with real-time updates)
+// In FirestoreHelper.kt
     fun getTodos(): LiveData<List<Todo>> {
         val todos = MutableLiveData<List<Todo>>()
         db.collection("todos")
@@ -33,22 +36,27 @@ class FirestoreHelper {
                     Log.e("FirestoreHelper", "Error getting Todos", exception)
                     return@addSnapshotListener
                 }
-                val todoList = snapshot?.documents?.map { document ->
-                    val todo = document.toObject(Todo::class.java)
-                    todo ?: Todo(
-                        taskName = "",
-                        category = "",
-                        description = "",
-                        date = Timestamp.now(),
-                        status = ""
 
-                    )
-                } ?: emptyList()
+                val todoList = mutableListOf<Todo>() // Use a mutable list
+                snapshot?.documents?.forEach { document ->
+                    try {
+                        val todo = document.toObject(Todo::class.java)
+                        if (todo != null) {
+                            todoList.add(todo)
+                        } else {
+                            // Log the specific document and the missing/mismatched fields
+                            Log.e("FirestoreHelper", "Error converting document to Todo: ${document.id}.  Check your data class and Firestore document schema.")
+                            // If you want to provide a default Todo in case of error, you can add it here.
+                            // todoList.add(Todo(...)); // Default Todo
+                        }
+                    } catch (e: Exception) {
+                        Log.e("FirestoreHelper", "Exception converting document ${document.id}: ${e.message}")
+                    }
+                }
                 todos.postValue(todoList)
             }
         return todos
     }
-
     // Delete a specific Todo from Firestore
     fun deleteTodo(todo: Todo) {
         val todoRef: DocumentReference =

@@ -27,7 +27,8 @@ class PreferenceManagerHelper(context: Context) {
     }
 
     // Clear login state
-    fun logoutUser () {
+    // PreferenceManagerHelper.kt
+   suspend fun logoutUser () {
         sharedPreferences.edit()
             .remove(LOGIN_STATE_KEY)
             .apply()

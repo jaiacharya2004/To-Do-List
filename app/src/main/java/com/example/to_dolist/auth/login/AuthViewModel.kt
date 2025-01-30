@@ -1,10 +1,13 @@
 package com.example.to_dolist.auth.login
 
+import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.to_dolist.MainActivity
 import com.example.to_dolist.PreferenceManagerHelper
 import com.example.to_dolist.navigation.NavigationRoute
 import com.google.firebase.auth.FirebaseAuth
@@ -12,10 +15,13 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.userProfileChangeRequest
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class AuthViewModel : ViewModel() {
+class AuthViewModel (application: Application) : AndroidViewModel(application) {
+
 
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> get() = _isLoading
@@ -25,7 +31,8 @@ class AuthViewModel : ViewModel() {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    private lateinit var preferenceManagerHelper: PreferenceManagerHelper
+    private var preferenceManagerHelper = PreferenceManagerHelper(application.applicationContext)
+
 
     // Initialize PreferenceManagerHelper
     fun initialize(preferenceManagerHelper: PreferenceManagerHelper) {
@@ -42,11 +49,17 @@ class AuthViewModel : ViewModel() {
         return preferenceManagerHelper.getLoginState()
     }
 
-    fun logoutUser () {
+    fun logoutUser() {
         Log.d("AuthViewModel", "Logging out user")
-        preferenceManagerHelper.logoutUser()
-        Log.d("AuthViewModel", "User logged out")    }
 
+        viewModelScope.launch(Dispatchers.IO) {
+            preferenceManagerHelper.logoutUser() // Clear preferences
+            withContext(Dispatchers.Main) {
+                auth.signOut() // Sign out from Firebase
+                Log.d("AuthViewModel", "User logged out")
+            }
+        }
+    }
 
     // Function to handle user login
     fun loginUser(

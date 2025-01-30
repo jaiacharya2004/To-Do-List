@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -19,16 +20,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.to_dolist.data.model.Todo
 import com.example.to_dolist.screens.home.HomeViewModel
 import com.google.firebase.Timestamp
+import androidx.compose.runtime.State
 import java.util.*
 
 @Composable
 fun TodoListScreen(viewModel: HomeViewModel, navController: NavController) {
-    val todos = viewModel.getTodosLiveData().observeAsState(initial = emptyList())
+    val listState = rememberLazyListState()
+
+    val todos: State<List<Todo>> = viewModel.getTodosLiveData().observeAsState(initial = emptyList()) // Correct way
+    Log.d("TodoListScreen", "Todos: ${todos.value}")  // Log the list of todos
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -39,19 +45,74 @@ fun TodoListScreen(viewModel: HomeViewModel, navController: NavController) {
             Text(text = "Todo List", style = MaterialTheme.typography.headlineSmall)
             Spacer(modifier = Modifier.height(16.dp))
 
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier
-                    .weight(1f)
-                    .background(Color.Gray)  // Add a background to see the space it occupies
-            ) {
-                items(todos.value) { todo ->
-                    Log.d("TodoList", "Todo Item: ${todo.taskName}")
-                    TodoItem(
-                        todo = todo,
-                    )
+
+
+            if (todos.value.isNotEmpty()) {
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(vertical = 16.dp)
+                ) {
+                    items(todos.value) { todo ->  // Ensure non-null value
+                        TodoItem(
+                            todo = todo,
+                            viewModel = viewModel
+                        )
+                    }
                 }
+            } else {
+                Text(
+                    text = "No tasks available",
+                    modifier = Modifier.fillMaxSize(),
+                    textAlign = TextAlign.Center
+                )
             }
+
+
+
+//            Card (
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(8.dp),
+//                shape = RoundedCornerShape(16.dp),
+//                colors = CardDefaults.cardColors(containerColor = Color.Gray)
+//            ) {
+//                Column(
+//                    modifier = Modifier.padding(16.dp),
+//                    verticalArrangement = Arrangement.spacedBy(8.dp)
+//                ) {
+//                    Row (
+//                        modifier = Modifier.fillMaxWidth(),
+//                        horizontalArrangement = Arrangement.SpaceBetween,
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                          todos.value.forEach { todo ->
+//                            Text(
+//                                text = todo.taskName
+//                            )
+//                            Text(
+//                                text = todo.description
+//                            )
+//                            Text(
+//                                text = todo.status
+//                            )
+//                            Text(
+//                                text = todo.category
+//                            )
+//
+//                            }
+//                }
+//            }
+//                }
+
+
+
+
+
 
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -71,13 +132,14 @@ fun TodoListScreen(viewModel: HomeViewModel, navController: NavController) {
 
 
 @Composable
-fun TodoItem(todo: Todo) {
+fun TodoItem(todo: Todo, viewModel: HomeViewModel) {
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F1F1))
+        colors = CardDefaults.cardColors(containerColor = Color.Blue)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -95,7 +157,13 @@ fun TodoItem(todo: Todo) {
                     color = Color.Gray
                 )
                 Button(
-                    onClick = { /* Handle task status update here */ },
+                    onClick = {
+                        // Handle task status change or log the todos
+                        viewModel.getTodosLiveData().observeForever {
+                            Log.d("TodoList", "Todos: $it")
+                        }
+                    },
+
                     colors = ButtonDefaults.buttonColors(
                         containerColor = when (todo.status) {
                             "Completed" -> Color(0xFF4CAF50)

@@ -3,6 +3,7 @@ package com.example.to_dolist.screens.profile
 import android.Manifest
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -35,8 +36,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.to_dolist.R
+import com.example.to_dolist.auth.login.AuthViewModel
+import com.example.to_dolist.navigation.NavigationRoute
 import com.example.to_dolist.screens.bottombar.BottomBar
 import com.google.firebase.auth.FirebaseAuth
 
@@ -44,8 +48,10 @@ import com.google.firebase.auth.FirebaseAuth
 fun ProfileScreen(
     navController: NavHostController,
     viewModel: ProfileViewModel,
+    authViewModel: AuthViewModel,
     savedInstanceState: Bundle? = null
     ) {
+
     val backgroundImage = ImageBitmap.imageResource(R.drawable.laptop_mac_computer_browser)
 
     val user = FirebaseAuth.getInstance().currentUser
@@ -68,6 +74,8 @@ fun ProfileScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color(0xFFFFFAF0)) // Background color
+
     ) {
         // Top box with background image and profile image
         Box(
@@ -124,8 +132,10 @@ fun ProfileScreen(
         ProfileImage(
             profileImageUri = profileImageUri,
             onEditClick = { uri ->
-                viewModel.updateProfileImage(uri) // Update profile image in ViewModel
-            }
+                viewModel.updateProfileImage(uri)// Update profile image in ViewModel
+
+            },
+
         )
         // Spacer for offset after the profile image
         Spacer(modifier = Modifier.height(40.dp))
@@ -151,8 +161,25 @@ fun ProfileScreen(
                 style = MaterialTheme.typography.bodySmall
             )
         }
+        Spacer(modifier = Modifier.height(70.dp))
 
-        Spacer(modifier = Modifier.height(367.dp))
+        Button(
+            onClick = {
+                // Clear user session and navigate to the Welcome Screen
+                authViewModel.logoutUser()
+
+                // Navigate to Welcome Screen and clear ProfileScreen from the back stack
+                navController.navigate(NavigationRoute.WelcomeScreen.route) {
+                    popUpTo(NavigationRoute.ProfileScreen.route) { inclusive = true }
+                    launchSingleTop = true
+                }
+            },
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text("Log Out")
+        }
+
+        Spacer(modifier = Modifier.height(243.dp))
 
         BottomBar(
             navController = navController
@@ -161,7 +188,7 @@ fun ProfileScreen(
 }
 
 @Composable
-fun ProfileImage(profileImageUri: Uri?, onEditClick: (Uri?) -> Unit) {
+fun ProfileImage(profileImageUri: Uri?, onEditClick: (Uri?) -> Unit, ) {
     val context = LocalContext.current
     var hasPermission by remember { mutableStateOf(false) }
     var showPermissionDeniedMessage by remember { mutableStateOf(false) }
@@ -222,7 +249,7 @@ fun ProfileImage(profileImageUri: Uri?, onEditClick: (Uri?) -> Unit) {
         IconButton(
             onClick = {
                 // Check Android version and handle permissions accordingly
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     // For Android 13 and above, request READ_MEDIA_IMAGES
                     permissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
                 } else {
@@ -258,4 +285,8 @@ fun ProfileImage(profileImageUri: Uri?, onEditClick: (Uri?) -> Unit) {
         }
         showPermissionDeniedMessage = false // Reset the flag to avoid showing
     }
+
+    Spacer(modifier = Modifier.height(16.dp))  // Space before logout button
+
+
 }

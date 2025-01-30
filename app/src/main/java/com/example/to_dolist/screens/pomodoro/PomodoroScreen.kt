@@ -40,11 +40,12 @@ fun PomodoroScreen(navController: NavHostController, pomodoroViewModel: Pomodoro
             .background(Color.Black)
             .padding(top = 50.dp, start = 1.dp, end = 1.dp)
             .fillMaxSize()
+            .background(Color(0xFFFFFAF0)) // Background color
             .verticalScroll(rememberScrollState())
     ) {
         Text(
             text = if (isBreakTime) "Break Timer" else "Pomodoro Timer",
-            color = Color.White,
+            color = Color.Black,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 20.dp),
@@ -82,7 +83,7 @@ fun PomodoroScreen(navController: NavHostController, pomodoroViewModel: Pomodoro
 
                 // Draw the timer arc (progress indicator)
                 drawArc(
-                    color = if (isBreakTime) Color.Cyan else Color.Green,
+                    color = if (isBreakTime) Color(0xFF6A0DAD)else Color(0xFF8990EE),
                     startAngle = 270f, // Start at the top
                     sweepAngle = sweepAngle, // Dynamic angle
                     useCenter = false,
@@ -98,7 +99,7 @@ fun PomodoroScreen(navController: NavHostController, pomodoroViewModel: Pomodoro
             // Display the time in the center
             Text(
                 text = timerText,
-                color = Color.White,
+                color = Color.Black,
                 fontSize = 50.sp,
                 modifier = Modifier.align(Alignment.Center)
             )
@@ -111,7 +112,7 @@ fun PomodoroScreen(navController: NavHostController, pomodoroViewModel: Pomodoro
         Text(
             text = if (isBreakTime) "Set Break Duration: ${pomodoroViewModel.breakDuration} min"
             else "Set Timer Duration: ${pomodoroViewModel.selectedTimeInMinutes} min",
-            color = Color.White,
+            color = Color.Black,
             modifier = Modifier.align(Alignment.CenterHorizontally),
             fontSize = 18.sp
         )
@@ -145,14 +146,14 @@ fun PomodoroScreen(navController: NavHostController, pomodoroViewModel: Pomodoro
                     onClick = { pomodoroViewModel.startBreak() }, // Implement `startBreak` in ViewModel
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    Text(text = "Start Break", color = Color.White)
+                    Text(text = "Start Break", color = Color.Black)
                 }
 
                 Button(
                     onClick = { pomodoroViewModel.skipBreak() }, // Implement `skipBreak` in ViewModel
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    Text(text = "Skip", color = Color.White)
+                    Text(text = "Skip", color = Color.Black)
                 }
             }
         } else if (!isTimerRunning && !isPaused) {
@@ -161,7 +162,7 @@ fun PomodoroScreen(navController: NavHostController, pomodoroViewModel: Pomodoro
                 onClick = { pomodoroViewModel.startTimer() },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text(text = "Start", color = Color.White)
+                Text(text = "Start", color = Color.Black)
             }
         } else if (isTimerRunning) {
             // Show "Pause" and "Restart" buttons
@@ -173,14 +174,14 @@ fun PomodoroScreen(navController: NavHostController, pomodoroViewModel: Pomodoro
                     onClick = { pomodoroViewModel.pauseTimer() },
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    Text(text = "Pause", color = Color.White)
+                    Text(text = "Pause", color = Color.Black)
                 }
 
                 Button(
                     onClick = { pomodoroViewModel.restartTimer() },
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    Text(text = "Restart", color = Color.White)
+                    Text(text = "Restart", color = Color.Black)
                 }
             }
         } else if (isPaused) {
@@ -193,14 +194,14 @@ fun PomodoroScreen(navController: NavHostController, pomodoroViewModel: Pomodoro
                     onClick = { pomodoroViewModel.resumeTimer() },
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    Text(text = "Resume", color = Color.White)
+                    Text(text = "Resume", color = Color.Black)
                 }
 
                 Button(
                     onClick = { pomodoroViewModel.restartTimer() },
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    Text(text = "Restart", color = Color.White)
+                    Text(text = "Restart", color = Color.Black)
                 }
             }
         }
@@ -214,7 +215,7 @@ fun PomodoroScreen(navController: NavHostController, pomodoroViewModel: Pomodoro
 //        BottomBar(navController)
     }
     Column(
-        modifier = Modifier.padding(top = 795.dp)
+        modifier = Modifier.padding(top = 805.dp)
     ) {
         BottomBar(navController)
     }

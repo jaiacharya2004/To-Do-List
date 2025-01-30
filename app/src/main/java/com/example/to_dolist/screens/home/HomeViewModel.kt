@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class HomeViewModel : ViewModel() {
@@ -17,18 +19,24 @@ class HomeViewModel : ViewModel() {
 
     private val todoRepository = TodoRepository()
 
-    init {
-        fetchTodos()
-    }
 
+    init {
+        viewModelScope.launch {
+            // Switch to IO thread for background tasks like fetching data
+            withContext(Dispatchers.IO) {
+                fetchTodos()
+            }
+        }    }
     fun getTodosLiveData(): LiveData<List<Todo>> {
         return todos
     }
 
-    // Fetch Todos from Firestore
-    private fun fetchTodos() {
-        todoRepository.getTodos().observeForever { todoList ->
-            _todos.postValue(todoList)  // Posting new value to LiveData
+
+    private suspend fun fetchTodos() {
+        withContext(Dispatchers.Main) {
+            todoRepository.getTodos().observeForever { todoList ->
+                _todos.postValue(todoList) // Posting new value to LiveData
+            }
         }
     }
 
@@ -39,6 +47,8 @@ class HomeViewModel : ViewModel() {
             fetchTodos() // Refresh the list after adding a new task
         }
     }
+
+
 
     fun deleteTodo(todo: Todo) {
         viewModelScope.launch {

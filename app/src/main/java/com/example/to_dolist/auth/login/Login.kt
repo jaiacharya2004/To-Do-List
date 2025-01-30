@@ -230,7 +230,8 @@ fun LoginScreen(navController: NavHostController) {
                 if (passwordState.value.isEmpty()) {
                     passwordError = "Password cannot be empty"
                 }
-
+                // do not use any logic into composable function pass the value
+// to viewmodel and then decide on basis of that
                 if (emailState.value.isNotEmpty() && passwordState.value.isNotEmpty()) {
                     authViewModel.loginUser(
                         email = emailState.value,

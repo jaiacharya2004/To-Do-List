@@ -1,5 +1,6 @@
 package com.example.to_dolist.navigation
 
+import android.app.Application
 import android.content.Context
 import android.net.Uri
 import android.os.Build
@@ -33,7 +34,7 @@ import com.example.to_dolist.screens.todo.CreateNewTaskScreen
 @Composable
 fun NavHostGraph(navController: NavHostController, context: Context, authViewModel: AuthViewModel) {
     val preferenceManagerHelper = PreferenceManagerHelper(context)
-
+val application = context.applicationContext as Application
     authViewModel.initialize(preferenceManagerHelper)
 
     val pomodoroViewModel: PomodoroViewModel = viewModel()
@@ -63,7 +64,11 @@ fun NavHostGraph(navController: NavHostController, context: Context, authViewMod
             )
         }
         composable(NavigationRoute.ProfileScreen.route) {
-            ProfileScreen(navController = navController, ProfileViewModel(context))
+            ProfileScreen(
+                navController = navController, ProfileViewModel(context),
+                authViewModel = AuthViewModel(application),
+                savedInstanceState = null
+            )
         }
         composable(NavigationRoute.PomodoroScreen.route) {
             PomodoroScreen(navController, pomodoroViewModel)

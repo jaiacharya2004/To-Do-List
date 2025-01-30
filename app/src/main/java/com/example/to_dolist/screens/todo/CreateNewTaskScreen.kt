@@ -231,14 +231,14 @@ fun CreateNewTaskScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Display Selected Date and Time
-                if (selectedDate.isNotEmpty() && selectedTime.isNotEmpty()) {
-                    Text(
-                        text = "Selected Date: $selectedDate\nSelected Time: $selectedTime",
-                        fontSize = 16.sp,
-                        color = Color.Gray
-                    )
-                }
+//                // Display Selected Date and Time
+//                if (selectedDate.isNotEmpty() && selectedTime.isNotEmpty()) {
+//                    Text(
+//                        text = "Selected Date: $selectedDate\nSelected Time: $selectedTime",
+//                        fontSize = 16.sp,
+//                        color = Color.Gray
+//                    )
+//                }
             }
 
             // Description Section
@@ -285,9 +285,10 @@ fun CreateNewTaskScreen(
                         category = categoryText,
                         description = description,
                         time = timestamp,
-                        status = selectedStatus ?: "Pending" // Default to "Pending" if null
+                        status = selectedStatus ?: "null" // Default to "Pending" if null
                     )
                     viewmodel.addTodo(newTask)
+                    viewmodel.getTodosLiveData()
 
 
                     onTaskCreate(newTask)
