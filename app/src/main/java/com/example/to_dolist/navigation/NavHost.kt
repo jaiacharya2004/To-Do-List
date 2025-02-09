@@ -9,9 +9,11 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.to_dolist.PreferenceManagerHelper
 import com.example.to_dolist.auth.WelcomeScreen
 import com.example.to_dolist.auth.login.AuthViewModel
@@ -19,6 +21,7 @@ import com.example.to_dolist.auth.login.LoginScreen
 import com.example.to_dolist.auth.login.forgotpassword.ForgotPasswordScreen
 import com.example.to_dolist.auth.signup.SignupScreen
 import com.example.to_dolist.data.FirestoreHelper
+import com.example.to_dolist.data.model.Todo
 
 
 import com.example.to_dolist.screens.home.HomeScreen
@@ -30,6 +33,7 @@ import com.example.to_dolist.screens.profile.ProfileViewModel
 import com.example.to_dolist.screens.splashscreens.SplashManager
 import com.example.to_dolist.screens.states.StateScreen
 import com.example.to_dolist.screens.todo.CreateNewTaskScreen
+import com.example.to_dolist.screens.todo.EditTaskScreen
 
 @Composable
 fun NavHostGraph(navController: NavHostController, context: Context, authViewModel: AuthViewModel) {
@@ -85,6 +89,12 @@ val application = context.applicationContext as Application
         }
 
 
+        composable("edit_task_screen/{taskId}") { backStackEntry ->
+            val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
+            EditTaskScreen(taskId, HomeViewModel(), navController)
+        }
+
+
     }
 }
 
@@ -106,4 +116,5 @@ sealed class NavigationRoute(val route: String) {
     data object PomodoroScreen : NavigationRoute("pomodoro")
     data object StateScreen : NavigationRoute("states")
     data object CreateNewScreen : NavigationRoute("create_task_screen")
+    data object EditTaskScreen : NavigationRoute("edit_task_screen")
 }

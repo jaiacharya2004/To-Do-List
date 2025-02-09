@@ -44,6 +44,7 @@ fun CreateNewTaskScreen(
     onTaskCreate: (Todo) -> Unit
 ) {
     var taskName by remember { mutableStateOf("") }
+    val id by remember { mutableStateOf("") }
     val descriptionFocusRequester = remember { FocusRequester() }
     val taskError by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -77,7 +78,7 @@ fun CreateNewTaskScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .background(Color.White)
-                .padding(start = 16.dp, top = 5.dp),
+                .padding(start = 16.dp, top = 25.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Task Name Section
@@ -89,17 +90,20 @@ fun CreateNewTaskScreen(
                 textStyle = LocalTextStyle.current.copy(color = Color.Black),
                 shape = RoundedCornerShape(20.dp),
                 keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Next,
+                    imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Text,
                 ),
                 keyboardActions = KeyboardActions(
-                    onNext = {
-                        descriptionFocusRequester.requestFocus()
+                    onDone = {
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
                     }
                 ),
                 modifier = Modifier.fillMaxWidth(),
                 isError = taskError.isNotEmpty()
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Category Section
             Text(
@@ -146,6 +150,9 @@ fun CreateNewTaskScreen(
                 }
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+
             Text("Status", color = Color.Black, fontSize = 25.sp, fontFamily = FontFamily.Serif)
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -183,63 +190,66 @@ fun CreateNewTaskScreen(
                 }
             }
 
-            // Date & Time Section
-            Column(
-                modifier = Modifier.padding(top = 10.dp, start = 5.dp)
-            ) {
-                Text("Date & Time", color = Color.Black, fontSize = 25.sp, fontFamily = FontFamily.Serif)
-
-                Spacer(modifier = Modifier.height(16.dp))
-                val context = LocalContext.current // Get context inside composable
-
-                // Date Picker Button
-                Button(onClick = {
-                    val datePicker = DatePickerDialog(
-                        context,
-                        { _, year, month, dayOfMonth ->
-                            calendar.set(year, month, dayOfMonth)
-                            selectedDate = dateFormatter.format(calendar.time)
-                        },
-                        calendar.get(Calendar.YEAR),
-                        calendar.get(Calendar.MONTH),
-                        calendar.get(Calendar.DAY_OF_MONTH)
-                    )
-                    datePicker.show()
-                }) {
-                    Text(text = if (selectedDate.isEmpty()) "Select Date" else "Date: $selectedDate")
-                }
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                // Time Picker Button
-                Button(onClick = {
-                    val timePicker = TimePickerDialog(
-                        context,
-                        { _, hour, minute ->
-                            calendar.set(Calendar.HOUR_OF_DAY, hour)
-                            calendar.set(Calendar.MINUTE, minute)
-                            selectedTime = timeFormatter.format(calendar.time)
-                        },
-                        calendar.get(Calendar.HOUR_OF_DAY),
-                        calendar.get(Calendar.MINUTE),
-                        false // 24-hour format false for AM/PM format
-                    )
-                    timePicker.show()
-                }) {
-                    Text(text = if (selectedTime.isEmpty()) "Select Time" else "Time: $selectedTime")
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-//                // Display Selected Date and Time
-//                if (selectedDate.isNotEmpty() && selectedTime.isNotEmpty()) {
-//                    Text(
-//                        text = "Selected Date: $selectedDate\nSelected Time: $selectedTime",
-//                        fontSize = 16.sp,
-//                        color = Color.Gray
+//            // Date & Time Section
+//            Column(
+//                modifier = Modifier.padding(top = 10.dp, start = 5.dp)
+//            ) {
+//                Text("Date & Time", color = Color.Black, fontSize = 25.sp, fontFamily = FontFamily.Serif)
+//
+//                Spacer(modifier = Modifier.height(16.dp))
+//                val context = LocalContext.current // Get context inside composable
+//
+//                // Date Picker Button
+//                Button(onClick = {
+//                    val datePicker = DatePickerDialog(
+//                        context,
+//                        { _, year, month, dayOfMonth ->
+//                            calendar.set(year, month, dayOfMonth)
+//                            selectedDate = dateFormatter.format(calendar.time)
+//                        },
+//                        calendar.get(Calendar.YEAR),
+//                        calendar.get(Calendar.MONTH),
+//                        calendar.get(Calendar.DAY_OF_MONTH)
 //                    )
+//                    datePicker.show()
+//                }) {
+//                    Text(text = if (selectedDate.isEmpty()) "Select Date" else "Date: $selectedDate")
 //                }
-            }
+//
+//                Spacer(modifier = Modifier.width(16.dp))
+//
+//                // Time Picker Button
+//                Button(onClick = {
+//                    val timePicker = TimePickerDialog(
+//                        context,
+//                        { _, hour, minute ->
+//                            calendar.set(Calendar.HOUR_OF_DAY, hour)
+//                            calendar.set(Calendar.MINUTE, minute)
+//                            selectedTime = timeFormatter.format(calendar.time)
+//                        },
+//                        calendar.get(Calendar.HOUR_OF_DAY),
+//                        calendar.get(Calendar.MINUTE),
+//                        false // 24-hour format false for AM/PM format
+//                    )
+//                    timePicker.show()
+//                }) {
+//                    Text(text = if (selectedTime.isEmpty()) "Select Time" else "Time: $selectedTime")
+//                }
+//
+//                Spacer(modifier = Modifier.height(16.dp))
+//
+////                // Display Selected Date and Time
+////                if (selectedDate.isNotEmpty() && selectedTime.isNotEmpty()) {
+////                    Text(
+////                        text = "Selected Date: $selectedDate\nSelected Time: $selectedTime",
+////                        fontSize = 16.sp,
+////                        color = Color.Gray
+////                    )
+////                }
+//            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
 
             // Description Section
             Text("Description", color = Color.Black, fontSize = 25.sp, fontFamily = FontFamily.Serif)
@@ -269,7 +279,7 @@ fun CreateNewTaskScreen(
             Button(
                 colors = ButtonDefaults.buttonColors(Color(0xFFA78BFA)),
                 onClick = {
-                    if (taskName.isBlank() || selectedDate.isEmpty() || selectedTime.isEmpty() || selectedStatus == null) {
+                    if (taskName.isBlank() || selectedStatus == null) {
                         // Handle validation: Show an error message or disable button
                         return@Button
                     }
@@ -277,21 +287,17 @@ fun CreateNewTaskScreen(
                     val categoryText = if (selectedCategories.isNotEmpty()) selectedCategories.joinToString(", ") else "Uncategorized"
 
                     // Combine selected date and time into a Timestamp
-                    val combinedDateTime = SimpleDateFormat("dd MMM yyyy hh:mm a", Locale.getDefault()).parse("$selectedDate $selectedTime")
-                    val timestamp = combinedDateTime?.let { Timestamp(it) } ?: Timestamp.now()
 
                     val newTask = Todo(
+                        id = id,
                         taskName = taskName,
                         category = categoryText,
                         description = description,
-                        time = timestamp,
                         status = selectedStatus ?: "null" // Default to "Pending" if null
                     )
                     viewmodel.addTodo(newTask)
                     viewmodel.getTodosLiveData()
 
-
-                    onTaskCreate(newTask)
 
                     navController.navigate(NavigationRoute.HomeScreen.route) {
                         popUpTo(NavigationRoute.CreateNewScreen.route) { inclusive = true }
@@ -308,4 +314,3 @@ fun CreateNewTaskScreen(
         }
     }
 }
-

@@ -5,26 +5,31 @@ import com.example.to_dolist.data.FirestoreHelper
 import com.example.to_dolist.data.model.Todo
 
 class TodoRepository {
-
     private val firestoreHelper = FirestoreHelper()
 
-    // Add Todo to Firestore
-     fun addTodo(todo: Todo) {
+    fun addTodo(todo: Todo) {
         firestoreHelper.addTodo(todo)
     }
 
-    // Get Todos from Firestore
-     fun getTodos(): LiveData<List<Todo>> {
+    fun getTodos(): LiveData<List<Todo>> {
         return firestoreHelper.getTodos()
     }
 
-    // Delete a specific Todo from Firestore
-     fun deleteTodo(todo: Todo) {
+    fun deleteTodo(todo: Todo) {
         firestoreHelper.deleteTodo(todo)
     }
 
-    // Delete all Todos from Firestore
-     fun deleteAllTodos() {
+    fun deleteAllTodos() {
         firestoreHelper.deleteAllTodos()
+    }
+
+    // **New Method: Get Task by ID (or name)**
+    fun getTaskById(taskId: String): LiveData<Todo> {
+        return firestoreHelper.getTaskByName(taskId)  // Calls FirestoreHelper function
+    }
+
+    // **New Method: Update Task**
+    fun updateTask(todo: Todo) {
+        firestoreHelper.updateTask(todo)  // Calls FirestoreHelper function
     }
 }

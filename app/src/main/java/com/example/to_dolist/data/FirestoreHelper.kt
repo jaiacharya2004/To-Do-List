@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.to_dolist.data.model.Todo
 import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.DocumentReference
 
@@ -14,8 +15,14 @@ class FirestoreHelper {
 
     // Add Todo to Firestore
     fun addTodo(todo: Todo) {
-        db.collection("todos")
-            .add(todo)
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return  // Get current user ID
+
+        // Create a reference to the user's "todos" collection
+        val documentRef = db.collection("users").document(userId).collection("todos").document()
+        val todoWithId = todo.copy(id = documentRef.id) // Firestore will generate a unique document ID for this todo
+
+        // Save the todo
+        documentRef.set(todoWithId)
             .addOnSuccessListener {
                 Log.d("FirestoreHelper", "Todo added successfully")
             }
@@ -25,42 +32,49 @@ class FirestoreHelper {
     }
 
 
-
     // Get Todos from Firestore (with real-time updates)
 // In FirestoreHelper.kt
     fun getTodos(): LiveData<List<Todo>> {
+        val userId =
+            FirebaseAuth.getInstance().currentUser?.uid ?: return MutableLiveData(emptyList())
+
         val todos = MutableLiveData<List<Todo>>()
-        db.collection("todos")
+
+        // Fetch todos from the authenticated user's "todos" collection
+        db.collection("users").document(userId).collection("todos")
             .addSnapshotListener { snapshot, exception ->
                 if (exception != null) {
-                    Log.e("FirestoreHelper", "Error getting Todos", exception)
+                    Log.e("FirestoreHelper", "Error fetching Todos", exception)
                     return@addSnapshotListener
                 }
 
-                val todoList = mutableListOf<Todo>() // Use a mutable list
-                snapshot?.documents?.forEach { document ->
+                val todoList = snapshot?.documents?.mapNotNull { document ->
                     try {
-                        val todo = document.toObject(Todo::class.java)
-                        if (todo != null) {
-                            todoList.add(todo)
-                        } else {
-                            // Log the specific document and the missing/mismatched fields
-                            Log.e("FirestoreHelper", "Error converting document to Todo: ${document.id}.  Check your data class and Firestore document schema.")
-                            // If you want to provide a default Todo in case of error, you can add it here.
-                            // todoList.add(Todo(...)); // Default Todo
-                        }
+                        document.toObject(Todo::class.java)
                     } catch (e: Exception) {
-                        Log.e("FirestoreHelper", "Exception converting document ${document.id}: ${e.message}")
+                        Log.e(
+                            "FirestoreHelper",
+                            "Error converting document ${document.id}: ${e.message}"
+                        )
+                        null
                     }
-                }
-                todos.postValue(todoList)
+                } ?: emptyList() // Provide an empty list if snapshot is null
+
+                todos.postValue(todoList) // Post the new list
             }
+
         return todos
     }
+
+
     // Delete a specific Todo from Firestore
     fun deleteTodo(todo: Todo) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+            ?: return  // Ensure the user is authenticated
         val todoRef: DocumentReference =
-            db.collection("todos").document(todo.taskName)  // Assuming the title is unique
+            db.collection("users").document(userId).collection("todos")
+                .document(todo.id)  // Correct path
+
         todoRef.delete()
             .addOnSuccessListener {
                 Log.d("FirestoreHelper", "Todo deleted successfully")
@@ -72,11 +86,15 @@ class FirestoreHelper {
 
     // Optionally: Delete all Todos (use with caution)
     fun deleteAllTodos() {
-        db.collection("todos")
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+            ?: return  // Ensure the user is authenticated
+
+        db.collection("users").document(userId).collection("todos")
             .get()
             .addOnSuccessListener { result ->
                 for (document in result) {
-                    db.collection("todos").document(document.id).delete()
+                    db.collection("users").document(userId).collection("todos")
+                        .document(document.id).delete()
                         .addOnSuccessListener {
                             Log.d(
                                 "FirestoreHelper",
@@ -96,4 +114,35 @@ class FirestoreHelper {
                 Log.e("FirestoreHelper", "Error getting Todos for deletion", exception)
             }
     }
+
+    fun updateTask(todo: Todo) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+            ?: return  // Ensure the user is authenticated
+
+        db.collection("users").document(userId).collection("todos").document(todo.id)
+            .set(todo)
+            .addOnSuccessListener {
+                Log.d("Firestore", "Task updated successfully")
+            }
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "Error updating task", e)
+            }
+    }
+
+
+    fun getTaskByName(taskId: String): LiveData<Todo> {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return MutableLiveData()
+
+        val taskLiveData = MutableLiveData<Todo>()
+        db.collection("users").document(userId).collection("todos").document(taskId)
+            .get()
+            .addOnSuccessListener { document ->
+                taskLiveData.value = document.toObject(Todo::class.java)
+            }
+
+        return taskLiveData
+    }
 }
+
+
+

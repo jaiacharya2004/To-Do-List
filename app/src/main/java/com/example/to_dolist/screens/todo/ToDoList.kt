@@ -2,11 +2,15 @@ package com.example.to_dolist.screens.todo
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
@@ -27,174 +31,115 @@ import com.example.to_dolist.data.model.Todo
 import com.example.to_dolist.screens.home.HomeViewModel
 import com.google.firebase.Timestamp
 import androidx.compose.runtime.State
+import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
 fun TodoListScreen(viewModel: HomeViewModel, navController: NavController) {
     val listState = rememberLazyListState()
 
-    val todos: State<List<Todo>> = viewModel.getTodosLiveData().observeAsState(initial = emptyList()) // Correct way
+    val todos: State<List<Todo>> = viewModel.getTodosLiveData().observeAsState(initial = emptyList())
     Log.d("TodoListScreen", "Todos: ${todos.value}")  // Log the list of todos
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
+
+
+    Log.d("TodoListScreen", "Todos observed: ${todos.value.size} items") // Log the size
+    todos.value.forEach { todo ->
+        Log.d("TodoListScreen", "Todo: $todo") // Log each Todo object
+    }
+
+     Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
-        ) {
+
+
+     ) {
             Text(text = "Todo List", style = MaterialTheme.typography.headlineSmall)
+
+         FloatingActionButton(
+             onClick = { navController.navigate("create_task_screen") },
+             modifier = Modifier
+                 .padding(16.dp)
+         ) {
+             Icon(imageVector = Icons.Default.Add, contentDescription = "Add Todo")
+         }
             Spacer(modifier = Modifier.height(16.dp))
 
+         todos.value.forEach { todo ->
+             Card(
+                 modifier = Modifier
+                     .fillMaxWidth()
+                     .clickable {
+                         navController.navigate("edit_task_screen/${todo.taskName}")
+
+                     }
+                     .padding(8.dp),
+                 shape = RoundedCornerShape(16.dp),
+                 colors = CardDefaults.cardColors(containerColor = Color(0xFFBB86FC))
+             ) {
+                 Column(
+                     modifier = Modifier.padding(16.dp),
+                 ) {
+                     // Top Row with Category and Complete Button
+                     Row(
+                         modifier = Modifier.fillMaxWidth(),
+                         horizontalArrangement = Arrangement.SpaceBetween,
+                         verticalAlignment = Alignment.CenterVertically
+                     ) {
+                         Text(
+                             text = todo.category,
+                             style = MaterialTheme.typography.labelLarge,
+                             color = Color.Cyan
+                         )
+                         Button(
+                             onClick = {
+                                 // Handle task status change or log the todos
+                                 viewModel.getTodosLiveData().observeForever {
+                                     Log.d("TodoList", "Todos: $it")
+                                 }
+                             },
+
+                             colors = ButtonDefaults.buttonColors(
+                                 containerColor = when (todo.status) {
+                                     "Complete" -> Color.Green
+                                     "Running" -> Color.Yellow
+                                     "Pending" -> Color.Red
+                                     else -> Color.Cyan
+                                 }
+                             ),
+                             shape = RoundedCornerShape(12.dp),
+                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)
+                         ) {
+                             Text(text = todo.status.ifEmpty { "" })
+                         }
 
 
-            if (todos.value.isNotEmpty()) {
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .padding(vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(vertical = 16.dp)
-                ) {
-                    items(todos.value) { todo ->  // Ensure non-null value
-                        TodoItem(
-                            todo = todo,
-                            viewModel = viewModel
-                        )
-                    }
-                }
-            } else {
-                Text(
-                    text = "No tasks available",
-                    modifier = Modifier.fillMaxSize(),
-                    textAlign = TextAlign.Center
-                )
-            }
+                     }
 
 
+                     // Task Name
+                     Text(
+                         text = todo.taskName,
+                         style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
+                         color = Color.Black
+                     )
 
-//            Card (
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(8.dp),
-//                shape = RoundedCornerShape(16.dp),
-//                colors = CardDefaults.cardColors(containerColor = Color.Gray)
-//            ) {
-//                Column(
-//                    modifier = Modifier.padding(16.dp),
-//                    verticalArrangement = Arrangement.spacedBy(8.dp)
-//                ) {
-//                    Row (
-//                        modifier = Modifier.fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.SpaceBetween,
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                          todos.value.forEach { todo ->
-//                            Text(
-//                                text = todo.taskName
-//                            )
-//                            Text(
-//                                text = todo.description
-//                            )
-//                            Text(
-//                                text = todo.status
-//                            )
-//                            Text(
-//                                text = todo.category
-//                            )
-//
-//                            }
-//                }
-//            }
-//                }
+                     // Description (optional)
+                     if (todo.description.isNotEmpty()) {
+                         Text(
+                             text = todo.description,
+                             style = MaterialTheme.typography.bodyMedium,
+                             color = Color.DarkGray
+                         )
+                     }
+                 }
+             }
+         }
+         Spacer(modifier = Modifier.height(100.dp))
+
+     }
 
 
-
-
-
-
-
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
-        // Floating Action Button to navigate to CreateNewTaskScreen
-        FloatingActionButton(
-            onClick = { navController.navigate("create_task_screen") },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-        ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = "Add Todo")
-        }
-    }
 }
 
 
-@Composable
-fun TodoItem(todo: Todo, viewModel: HomeViewModel) {
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Blue)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            // Top Row with Category and Complete Button
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = todo.category,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = Color.Gray
-                )
-                Button(
-                    onClick = {
-                        // Handle task status change or log the todos
-                        viewModel.getTodosLiveData().observeForever {
-                            Log.d("TodoList", "Todos: $it")
-                        }
-                    },
-
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = when (todo.status) {
-                            "Completed" -> Color(0xFF4CAF50)
-                            "Running" -> Color(0xFFFF9800)
-                            "Pending" -> Color(0xFFFFC107)
-                            else -> Color(0xFFE0E0E0)
-                        }
-                    ),
-                    shape = RoundedCornerShape(12.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)
-                ) {
-                    Text(text = todo.status.ifEmpty { "" })
-                }
-            }
-
-
-            // Task Name
-            Text(
-                text = todo.taskName,
-                style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
-                color = Color.Black
-            )
-
-            // Description (optional)
-            if (todo.description.isNotEmpty()) {
-                Text(
-                    text = todo.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.DarkGray
-                )
-            }
-        }
-    }
-}

@@ -62,4 +62,19 @@ class HomeViewModel : ViewModel() {
             todoRepository.deleteAllTodos()  // This should call the method that deletes all todos
         }
     }
+
+    fun getTaskById(taskId: String): LiveData<Todo> {
+        return todoRepository.getTaskById(taskId)
+    }
+
+    // **New Method: Update Task**
+    fun updateTask(todo: Todo) {
+        viewModelScope.launch {
+            todoRepository.updateTask(todo)
+        }
+    }
+
+
+
+
 }
