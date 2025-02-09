@@ -7,5 +7,5 @@ data class Todo(
     val taskName: String = "", // Default empty string
     val category: String = "", // Default empty string
     val description: String = "", // Default empty string
-    val status : String = ""
+    val status : String = "",
 )

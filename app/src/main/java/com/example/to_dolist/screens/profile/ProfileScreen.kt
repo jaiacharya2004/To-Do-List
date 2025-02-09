@@ -1,11 +1,9 @@
 package com.example.to_dolist.screens.profile
 
 import android.Manifest
-import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -58,11 +56,9 @@ fun ProfileScreen(
 
     val userName = user?.displayName ?: "User Name" // Display name (may be null)
     val userEmail = user?.email ?: "Email not available" // User's email (may be null)
-    val initialImageUri: Uri? = savedInstanceState?.getString("profileImageUri")?.let { Uri.parse(it) }
 
     val profileImageUri by viewModel.profileImageUri.collectAsState()
 
-    val context = LocalContext.current
 
     DisposableEffect(key1 = Unit) {
         onDispose {
@@ -189,7 +185,6 @@ fun ProfileScreen(
 
 @Composable
 fun ProfileImage(profileImageUri: Uri?, onEditClick: (Uri?) -> Unit, ) {
-    val context = LocalContext.current
     var hasPermission by remember { mutableStateOf(false) }
     var showPermissionDeniedMessage by remember { mutableStateOf(false) }
 

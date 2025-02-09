@@ -1,7 +1,6 @@
 package com.example.to_dolist.screens.home
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,8 +27,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,10 +44,11 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LiveData
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.to_dolist.R
-import com.example.to_dolist.navigation.NavigationRoute
+import com.example.to_dolist.data.model.Todo
 import com.example.to_dolist.screens.bottombar.BottomBar
 import com.example.to_dolist.screens.calendar.ScrollableCalendar
 import com.example.to_dolist.screens.profile.ProfileViewModel
@@ -105,6 +107,16 @@ fun HomeScreen(navController: NavHostController, viewModel: ProfileViewModel) {
                     fontFamily = FontFamily.Serif,
                     fontSize = 20.sp
                 )
+                Spacer(modifier = Modifier.width(76.dp))
+
+                FloatingActionButton(
+                    onClick = { navController.navigate("create_task_screen") },
+                    modifier = Modifier
+//                        .size(40.dp)
+                        .padding(top = 16.dp,)
+                ) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "Add Todo")
+                }
 
 
             }
@@ -131,10 +143,10 @@ fun HomeScreen(navController: NavHostController, viewModel: ProfileViewModel) {
 
             HorizontalDivider(thickness = 1.dp, color = Color.Gray)
 
+            val homeViewModel = HomeViewModel()
 
-
-            TodoListScreen(viewModel = HomeViewModel(),navController)
-
+            val todos: State<List<Todo>> = homeViewModel.getTodosLiveData().observeAsState(initial = emptyList())
+            TodoListScreen(navController,todos)
 
 
         }

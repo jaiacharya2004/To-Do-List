@@ -1,21 +1,33 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# Keep Firebase Authentication and Firestore classes
+-keep class com.google.firebase.** { *; }
+-keep class com.firebase.ui.auth.** { *; }
+-keep class com.google.firebase.auth.** { *; }
+-keep class com.google.firebase.firestore.** { *; }
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Keep Jetpack Compose, ViewModel, and Activity classes
+-keep class androidx.compose.** { *; }
+-keep class androidx.lifecycle.** { *; }
+-keep class androidx.activity.** { *; }
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Keep custom ViewModel classes
+-keep class com.example.to_dolist.viewmodel.** { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Keep Room Database entities and DAOs
+-keep class androidx.room.** { *; }
+
+# Keep classes for WebView JS interface (if you're using WebView)
+# -keepclassmembers class fqcn.of.javascript.interface.for.webview {
+#    public *;
+# }
+
+# Keep line number and source file information for stack traces
+-keepattributes SourceFile,LineNumberTable
+
+# Keep Coil classes for image loading
+-keep class coil.** { *; }
+
+# Don't remove classes/methods used by reflection or dynamically loaded
+-dontwarn androidx.lifecycle.**
+-dontwarn androidx.room.**
+-dontwarn com.google.firebase.**
+-dontwarn coil.**

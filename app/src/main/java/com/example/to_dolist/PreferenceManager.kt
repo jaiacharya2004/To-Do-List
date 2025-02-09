@@ -31,6 +31,7 @@ class PreferenceManagerHelper(context: Context) {
    suspend fun logoutUser () {
         sharedPreferences.edit()
             .remove(LOGIN_STATE_KEY)
+            .remove(PROFILE_IMAGE_URI_KEY)
             .apply()
     }
 

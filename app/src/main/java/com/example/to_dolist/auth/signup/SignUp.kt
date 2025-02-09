@@ -4,7 +4,6 @@ package com.example.to_dolist.auth.signup
 
 
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +22,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 
 import androidx.compose.runtime.getValue
@@ -70,7 +68,6 @@ import com.example.to_dolist.auth.login.AuthViewModel
 import com.example.to_dolist.navigation.NavigationRoute
 
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SignupScreen(
     navController: NavHostController,
@@ -78,7 +75,6 @@ fun SignupScreen(
 ) {
     val authError by authViewModel.authError
 
-    var emailError by remember { mutableStateOf<String?>(null) }
 
     val nameState = rememberSaveable  { mutableStateOf("") }
     val emailState = rememberSaveable  { mutableStateOf("") }
@@ -87,10 +83,8 @@ fun SignupScreen(
 
     val emailFocusRequester = remember { FocusRequester() }
     val passwordFocusRequester = remember { FocusRequester() }
-    val nameFocusRequester = remember { FocusRequester() }
 
     val keyboardController = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
 
     var showNameError by remember { mutableStateOf(false) }
     var showEmailError by remember { mutableStateOf(false) }

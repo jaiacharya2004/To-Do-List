@@ -293,7 +293,7 @@ fun CreateNewTaskScreen(
                         taskName = taskName,
                         category = categoryText,
                         description = description,
-                        status = selectedStatus ?: "null" // Default to "Pending" if null
+                        status = selectedStatus ?: "null", // Default to "Pending" if null
                     )
                     viewmodel.addTodo(newTask)
                     viewmodel.getTodosLiveData()

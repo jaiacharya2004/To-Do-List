@@ -1,7 +1,5 @@
 package com.example.to_dolist.auth.login
 
-import android.content.Context
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,7 +9,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -36,7 +34,6 @@ import com.example.to_dolist.PreferenceManagerHelper
 import com.example.to_dolist.R
 import com.example.to_dolist.navigation.NavigationRoute
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LoginScreen(navController: NavHostController) {
 
@@ -78,7 +75,7 @@ fun LoginScreen(navController: NavHostController) {
     ) {
         Row {
             Icon(
-                imageVector = Icons.Default.ArrowBack,
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back",
                 tint = Color.Black,
                 modifier = Modifier
