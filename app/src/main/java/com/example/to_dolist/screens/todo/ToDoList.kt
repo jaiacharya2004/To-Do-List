@@ -1,12 +1,10 @@
 package com.example.to_dolist.screens.todo
 
 
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -44,7 +42,6 @@ fun TodoListScreen(
             .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
-
     ) {
         Text(
             text = "Todo List",
@@ -78,10 +75,10 @@ fun TodoListScreen(
                 }
             )
         }
+        SnackbarHost(hostState = snackbarHostState)
+
     }
 
-    // Snackbar for Undo Action
-    SnackbarHost(hostState = snackbarHostState)
 }
 
 
@@ -103,7 +100,6 @@ fun TodoItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-
     ) {
         // Background (Delete Icon)
         if (showDelete) {
