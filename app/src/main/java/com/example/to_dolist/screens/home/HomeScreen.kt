@@ -57,7 +57,7 @@ import com.google.firebase.auth.FirebaseAuth
 import java.time.LocalDate
 
 @Composable
-fun HomeScreen(navController: NavHostController, viewModel: ProfileViewModel) {
+fun HomeScreen(navController: NavHostController, viewModel: ProfileViewModel,onDelete: (Todo) -> Unit, onRestore: (Todo) -> Unit) {
     val user = FirebaseAuth.getInstance().currentUser
     val userName = user?.displayName ?: "User Name"
     val profileImageUri by viewModel.profileImageUri.collectAsState()
@@ -69,12 +69,12 @@ fun HomeScreen(navController: NavHostController, viewModel: ProfileViewModel) {
             .fillMaxSize() // Ensures the Box takes up the entire screen
             .fillMaxHeight()
             .background(Color(0xFFFFFAF0)) // Background color
+
     ) {
         // Column with padding inside the Box
         Column(
             modifier = Modifier
                 .padding(top = 40.dp, start = 16.dp, end = 16.dp)
-                .verticalScroll(rememberScrollState())
         ) {
             // Top Row: Profile Image and Greeting
             Row(
@@ -143,10 +143,12 @@ fun HomeScreen(navController: NavHostController, viewModel: ProfileViewModel) {
 
             HorizontalDivider(thickness = 1.dp, color = Color.Gray)
 
+
+
             val homeViewModel = HomeViewModel()
 
             val todos: State<List<Todo>> = homeViewModel.getTodosLiveData().observeAsState(initial = emptyList())
-            TodoListScreen(navController,todos)
+            TodoListScreen(navController,todos , onDelete, onRestore)
 
 
         }

@@ -32,4 +32,8 @@ class TodoRepository {
     fun updateTask(todo: Todo) {
         firestoreHelper.updateTask(todo)  // Calls FirestoreHelper function
     }
+
+    fun restoreTask(todo: Todo) {
+        firestoreHelper.addTodo(todo) // Re-add task to Firestore
+    }
 }

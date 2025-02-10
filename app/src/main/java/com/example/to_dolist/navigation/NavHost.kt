@@ -22,6 +22,7 @@ import com.example.to_dolist.auth.login.forgotpassword.ForgotPasswordScreen
 import com.example.to_dolist.auth.signup.SignupScreen
 import com.example.to_dolist.data.FirestoreHelper
 import com.example.to_dolist.data.model.Todo
+import com.example.to_dolist.data.repository.TodoRepository
 
 
 import com.example.to_dolist.screens.home.HomeScreen
@@ -38,7 +39,9 @@ import com.example.to_dolist.screens.todo.EditTaskScreen
 @Composable
 fun NavHostGraph(navController: NavHostController, context: Context, authViewModel: AuthViewModel) {
     val preferenceManagerHelper = PreferenceManagerHelper(context)
-val application = context.applicationContext as Application
+    val todoRepository = TodoRepository()
+
+    val application = context.applicationContext as Application
     authViewModel.initialize(preferenceManagerHelper)
 
     val pomodoroViewModel: PomodoroViewModel = viewModel()
@@ -64,7 +67,12 @@ val application = context.applicationContext as Application
         }
         composable(NavigationRoute.HomeScreen.route) {
             HomeScreen(
-                navController, ProfileViewModel(context),
+                navController, ProfileViewModel(context), onDelete = { todo ->
+                    todoRepository.deleteTodo(todo) // Corrected call
+                },
+                onRestore = { todo ->
+                    todoRepository.addTodo(todo) // Corrected call
+                }
             )
         }
         composable(NavigationRoute.ProfileScreen.route) {
