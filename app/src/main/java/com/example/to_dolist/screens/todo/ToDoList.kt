@@ -1,6 +1,7 @@
 package com.example.to_dolist.screens.todo
 
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
@@ -95,7 +96,6 @@ fun TodoItem(
     var showDelete by remember { mutableStateOf(false) }
     var cardWidth by remember { mutableFloatStateOf(0f) }
 
-    val offsetX by remember { mutableStateOf(swipeOffsets.getOrDefault(todo.taskName, 0f)) }
 
     Box(
         modifier = Modifier
@@ -153,7 +153,7 @@ fun TodoItem(
                     }
                 )
                 .clickable {
-                    navController.navigate("edit_task_screen/${todo.taskName}")
+                    navController.navigate("edit_task_screen/${todo.id}/${todo.taskName}/${todo.description}/${todo.status}/${todo.category}")
                 },
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = Color(0xFFBB86FC))

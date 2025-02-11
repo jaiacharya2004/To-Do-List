@@ -115,19 +115,35 @@ class FirestoreHelper {
             }
     }
 
-    fun updateTask(todo: Todo) {
+    fun updateTask(task: Todo) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
             ?: return  // Ensure the user is authenticated
 
-        db.collection("users").document(userId).collection("todos").document(todo.id)
-            .set(todo)
+        if (task.id.isBlank()) {
+            Log.e("FirestoreHelper", "Task ID is blank. Cannot update task.")
+            return
+        }
+
+        // Use the taskId to get the correct document reference
+        db.collection("users").document(userId).collection("todos").document(task.id)
+            .update(
+                "taskName", task.taskName,
+                "description", task.description,
+                "status", task.status,
+                "category", task.category // Add category update here
+            )
             .addOnSuccessListener {
-                Log.d("Firestore", "Task updated successfully")
+                Log.d("FirestoreHelper", "Task updated successfully")
             }
             .addOnFailureListener { e ->
-                Log.e("Firestore", "Error updating task", e)
+                Log.e("FirestoreHelper", "Error updating task", e)
             }
     }
+
+
+
+
+
 
 
     fun getTaskByName(taskId: String): LiveData<Todo> {
@@ -142,6 +158,9 @@ class FirestoreHelper {
 
         return taskLiveData
     }
+
+
+
 }
 
 

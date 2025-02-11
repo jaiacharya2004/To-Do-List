@@ -25,8 +25,9 @@ class TodoRepository {
 
     // **New Method: Get Task by ID (or name)**
     fun getTaskById(taskId: String): LiveData<Todo> {
-        return firestoreHelper.getTaskByName(taskId)  // Calls FirestoreHelper function
+        return firestoreHelper.getTaskByName(taskId)
     }
+
 
     // **New Method: Update Task**
     fun updateTask(todo: Todo) {
@@ -36,4 +37,6 @@ class TodoRepository {
     fun restoreTask(todo: Todo) {
         firestoreHelper.addTodo(todo) // Re-add task to Firestore
     }
+
+
 }

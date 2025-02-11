@@ -97,10 +97,27 @@ fun NavHostGraph(navController: NavHostController, context: Context, authViewMod
         }
 
 
-        composable("edit_task_screen/{taskId}") { backStackEntry ->
+        composable("edit_task_screen/{taskId}/{taskName}/{description}/{status}/{category}") { backStackEntry ->
             val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
-            EditTaskScreen(taskId, HomeViewModel(), navController)
+            val taskName = backStackEntry.arguments?.getString("taskName") ?: ""
+            val description = backStackEntry.arguments?.getString("description") ?: ""
+            val status = backStackEntry.arguments?.getString("status") ?: "Pending"
+            val category = backStackEntry.arguments?.getString("category") ?: ""
+
+            Log.d("EditTaskScreen", "Received task data: taskId=$taskId, taskName=$taskName, status=$status, category=$category")
+
+
+            EditTaskScreen(
+                taskId = taskId,
+                taskName = taskName,
+                description = description,
+                status = status,
+                category = category,
+                navController = navController,
+                viewModel = HomeViewModel()
+            )
         }
+
 
 
     }
