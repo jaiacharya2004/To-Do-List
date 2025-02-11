@@ -1,7 +1,6 @@
 package com.example.to_dolist.screens.calendar
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -11,7 +10,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,7 +41,6 @@ fun ScrollableCalendar(
 
     Column {
 
-
         LazyRow(
             state = listState,
             modifier = Modifier
@@ -63,6 +60,7 @@ fun ScrollableCalendar(
         }
     }
 }
+
 
 @Composable
 fun DateItem(
@@ -109,7 +107,7 @@ fun DateItem(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 fun generateDates(currentDate: LocalDate, range: Int): List<LocalDate> {
     val startDate = currentDate.minusDays(range.toLong()) // 15 days before
     val endDate = currentDate.plusDays(range.toLong())    // 15 days after

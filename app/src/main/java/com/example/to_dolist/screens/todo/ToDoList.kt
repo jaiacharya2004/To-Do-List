@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntOffset
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
@@ -36,6 +37,9 @@ fun TodoListScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     var recentlyDeletedTodo by remember { mutableStateOf<Todo?>(null) }
+
+    // Keep track of swipe offsets per todo
+    val swipeOffsets = remember { mutableStateMapOf<String, Float>() }
 
     Column(
         modifier = Modifier
@@ -56,6 +60,7 @@ fun TodoListScreen(
                 navController = navController,
                 onDelete = { deletedTodo ->
                     recentlyDeletedTodo = deletedTodo
+                    swipeOffsets.remove(deletedTodo.taskName) // Reset swipe state on delete
                     onDelete(deletedTodo)
 
                     // Show Snackbar for Undo
@@ -72,29 +77,25 @@ fun TodoListScreen(
                             }
                         }
                     }
-                }
+                },
+                swipeOffsets = swipeOffsets
             )
         }
         SnackbarHost(hostState = snackbarHostState)
-
     }
-
 }
-
-
-
-
-
 
 @Composable
 fun TodoItem(
     todo: Todo,
     navController: NavController,
-    onDelete: (Todo) -> Unit
+    onDelete: (Todo) -> Unit,
+    swipeOffsets: MutableMap<String, Float>
 ) {
-    var offsetX by remember { mutableFloatStateOf(0f) }
-    val deleteThreshold = -50f // Threshold for showing delete icon
     var showDelete by remember { mutableStateOf(false) }
+    var cardWidth by remember { mutableFloatStateOf(0f) }
+
+    val offsetX by remember { mutableStateOf(swipeOffsets.getOrDefault(todo.taskName, 0f)) }
 
     Box(
         modifier = Modifier
@@ -127,18 +128,26 @@ fun TodoItem(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .offset { IntOffset(offsetX.roundToInt(), 0) }
+                .onGloballyPositioned { coordinates ->
+                    cardWidth = coordinates.size.width.toFloat()
+                }
+                .offset { IntOffset(swipeOffsets[todo.taskName]?.roundToInt() ?: 0, 0) }
                 .draggable(
                     state = rememberDraggableState { delta ->
-                        offsetX += delta
-                        showDelete = offsetX <= deleteThreshold
+                        val maxDragDistance = -cardWidth / 2
+                        swipeOffsets[todo.taskName] =
+                            (swipeOffsets.getOrDefault(todo.taskName, 0f) + delta).coerceIn(
+                                maxDragDistance,
+                                0f
+                            )
+                        showDelete = swipeOffsets[todo.taskName]!! <= maxDragDistance
                     },
                     orientation = Orientation.Horizontal,
                     onDragStopped = {
-                        if (offsetX <= deleteThreshold) {
+                        if (swipeOffsets[todo.taskName]!! <= -cardWidth / 2) {
                             showDelete = true
                         } else {
-                            offsetX = 0f
+                            swipeOffsets[todo.taskName] = 0f
                             showDelete = false
                         }
                     }
@@ -148,7 +157,8 @@ fun TodoItem(
                 },
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = Color(0xFFBB86FC))
-        ) {
+        )
+        {
             Column(
                 modifier = Modifier.padding(16.dp),
             ) {
