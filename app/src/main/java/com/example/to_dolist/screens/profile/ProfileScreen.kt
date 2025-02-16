@@ -175,7 +175,7 @@ fun ProfileScreen(
             Text("Log Out")
         }
 
-        Spacer(modifier = Modifier.height(243.dp))
+        Spacer(modifier = Modifier.height(210.dp))
 
         BottomBar(
             navController = navController

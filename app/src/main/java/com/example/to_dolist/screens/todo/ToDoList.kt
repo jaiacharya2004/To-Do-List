@@ -1,7 +1,7 @@
 package com.example.to_dolist.screens.todo
 
 
-import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
@@ -22,8 +22,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.navigation.NavController
+import com.example.to_dolist.R
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import com.example.to_dolist.data.model.Todo
@@ -38,15 +40,14 @@ fun TodoListScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     var recentlyDeletedTodo by remember { mutableStateOf<Todo?>(null) }
-
-    // Keep track of swipe offsets per todo
     val swipeOffsets = remember { mutableStateMapOf<String, Float>() }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = "Todo List",
@@ -55,36 +56,53 @@ fun TodoListScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        todos.value.forEach { todo ->
-            TodoItem(
-                todo = todo,
-                navController = navController,
-                onDelete = { deletedTodo ->
-                    recentlyDeletedTodo = deletedTodo
-                    swipeOffsets.remove(deletedTodo.taskName) // Reset swipe state on delete
-                    onDelete(deletedTodo)
+        if (todos.value.isEmpty()) {
+            // Show Image when the task list is empty
+            Image(
+                painter = painterResource(id = R.drawable.no_task), // Ensure you have an image in res/drawable
+                contentDescription = "No Tasks",
+                modifier = Modifier
+                    .size(300.dp)
+                    .padding(16.dp)
+            )
+            Text(
+                text = "No tasks available. Add a new task!",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
+        } else {
+            todos.value.forEach { todo ->
+                TodoItem(
+                    todo = todo,
+                    navController = navController,
+                    onDelete = { deletedTodo ->
+                        recentlyDeletedTodo = deletedTodo
+                        swipeOffsets.remove(deletedTodo.taskName) // Reset swipe state on delete
+                        onDelete(deletedTodo)
 
-                    // Show Snackbar for Undo
-                    coroutineScope.launch {
-                        val result = snackbarHostState.showSnackbar(
-                            message = "Task deleted",
-                            actionLabel = "Undo",
-                            duration = SnackbarDuration.Short
-                        )
-                        if (result == SnackbarResult.ActionPerformed) {
-                            recentlyDeletedTodo?.let {
-                                onRestore(it)
-                                recentlyDeletedTodo = null
+                        // Show Snackbar for Undo
+                        coroutineScope.launch {
+                            val result = snackbarHostState.showSnackbar(
+                                message = "Task deleted",
+                                actionLabel = "Undo",
+                                duration = SnackbarDuration.Short
+                            )
+                            if (result == SnackbarResult.ActionPerformed) {
+                                recentlyDeletedTodo?.let {
+                                    onRestore(it)
+                                    recentlyDeletedTodo = null
+                                }
                             }
                         }
-                    }
-                },
-                swipeOffsets = swipeOffsets
-            )
+                    },
+                    swipeOffsets = swipeOffsets
+                )
+            }
         }
         SnackbarHost(hostState = snackbarHostState)
     }
 }
+
 
 @Composable
 fun TodoItem(

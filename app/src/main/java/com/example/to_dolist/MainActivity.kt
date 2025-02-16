@@ -1,12 +1,9 @@
 package com.example.to_dolist
 
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.annotation.RequiresApi
-import androidx.lifecycle.ViewModelProvider
 import com.example.to_dolist.navigation.SetupNavigation
 import com.example.to_dolist.ui.theme.ToDoListTheme
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -29,7 +26,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ToDoListTheme {
-
                 SetupNavigation(
                     context = this,
                 )

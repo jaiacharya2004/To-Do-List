@@ -18,7 +18,7 @@ fun SplashManager(
     val authViewModel: AuthViewModel = viewModel()
     val preferenceManagerHelper = PreferenceManagerHelper(context)
     // Initialize the splash screen state
-    var currentSplashScreen by remember { mutableStateOf(1) }
+    var currentSplashScreen by remember { mutableIntStateOf(1) }
     val scope = rememberCoroutineScope()
 
     authViewModel.initialize(preferenceManagerHelper)
@@ -35,10 +35,7 @@ fun SplashManager(
 
     // Splash screen transitions
     when (currentSplashScreen) {
-        1 -> FirstSplashScreen(
-            onNext = { currentSplashScreen = 2 },
-            onSkip = { currentSplashScreen = 4 } // Skipping all splash screens
-        )
+        1 -> FirstSplashScreen()
         2 -> SecondSplashScreen(
             onNext = { currentSplashScreen = 3 },
             onPrev = { currentSplashScreen = 1 },
